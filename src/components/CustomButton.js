@@ -17,13 +17,14 @@ function CustomButton({ title, buttonColor , handleOnPress, disabled=false}) {
 const styles = StyleSheet.create({
     button: {
         width : '100%',
-        borderRadius: 4,
+        borderRadius: 10,
         backgroundColor : GlobalStyles.primaryColor,
         paddingVertical: 10,
     },
     buttonTitle : {
         color : '#fff',
         fontSize: 20,
+        fontWeight: '800',
         textAlign: 'center'
     }
 })

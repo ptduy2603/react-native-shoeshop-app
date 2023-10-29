@@ -1,7 +1,11 @@
-import { View, TextInput, StyleSheet } from "react-native"
+import { View, TextInput, StyleSheet, Pressable } from "react-native"
+import { Ionicons } from "@expo/vector-icons";
 import PropTypes from 'prop-types';
+import { useState } from "react";
 
 function FormInputFeild({ placeholder, icon , value, handleTextChange, isSecure=false, autoFocus=false, type='text' }) {
+    const [hideData, setHideData] = useState(true)
+
     return ( 
         <View style={styles.inputContainer}>
             {icon}
@@ -12,8 +16,22 @@ function FormInputFeild({ placeholder, icon , value, handleTextChange, isSecure=
                 value={value}
                 onChangeText={handleTextChange}
                 inputMode={type}
-                secureTextEntry={isSecure}
+                secureTextEntry={hideData}
             />
+            {isSecure ? 
+                (
+                    <Pressable 
+                        style={styles.eyeIcon}
+                        onPress={() => setHideData(!hideData)}
+                    >
+                        {
+                            hideData ?  <Ionicons name='eye-off-outline' size={20} /> : <Ionicons name='eye-outline' size={20} />
+                        }
+                    </Pressable>
+                ) 
+            : 
+                null 
+            }
         </View>
     )
 }
@@ -33,6 +51,9 @@ const styles = StyleSheet.create({
     inputText: {
         flex: 1,
         fontSize: 16,
+    },
+    eyeIcon: {
+
     }
 })
 
