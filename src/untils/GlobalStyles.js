@@ -7,8 +7,8 @@ const GlobalStyles = StyleSheet.create({
         backgroundColor : '#fafafc',
         alignItems: 'center',
         marginTop : StatusBar.currentHeight || 0,
-        paddingVertical: 40,
         paddingHorizontal: 20,
+        paddingVertical: 10,
     }
 })
 

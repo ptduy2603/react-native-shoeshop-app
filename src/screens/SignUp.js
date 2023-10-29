@@ -1,7 +1,9 @@
-import { useState } from 'react';
-import { View, Text, SafeAreaView, StyleSheet } from 'react-native';
+'use strict'
+import { useReducer, useCallback, useState } from 'react';
+import { View, Text, SafeAreaView, StyleSheet, Keyboard } from 'react-native';
 import { Fontisto, SimpleLineIcons, FontAwesome } from '@expo/vector-icons';
 
+import useValidate from '../hooks/useValidate';
 import FormContainer from '../components/FormContainer';
 import FormHeader from '../components/FormHeader';
 import FormInputFeild from '../components/FormInputFeild';
@@ -9,14 +11,69 @@ import CustomButton from '../components/CustomButton';
 import NavigateQuestion from '../components/NavigateQuestion';
 import GlobalStyles from '../untils/GlobalStyles';
 
+const initState = {
+    username: '',
+    email : '',
+    password : '',
+    confirmationPassword : '',
+}
+
+const reducer = (state, action) => {
+    switch(action.type) {
+        case 'SET_VALUE' : {
+            return {
+                ...state,
+                [action.payload.input] : action.payload.data
+            }
+        }
+        default:
+             return state
+    }
+}
+
 function SignUp({ navigation }) {
-    const [username, setUsername] = useState('')
-    const [email, setEmail]  = useState('')
-    const [password, setPassword] = useState('')
-    const [confirmationPassword, setComfirmationPassword] = useState('')
+    const [state, dispatch] = useReducer(reducer, initState)
+    const { invalidFeilds, handleSetInvalidFeilds, handleResetInvalidFeilds, handleCheckInvalid } = useValidate()
+
+    const handleInputChange = (input, value) => {
+        dispatch({
+            type: 'SET_VALUE',
+            payload: {
+                input,
+                data : value
+            }
+        })
+    } 
+    
+    const validateFormInput = useCallback(() => {
+        let check = true
+        Keyboard.dismiss()
+        if(!state.username.trim()) {
+            handleSetInvalidFeilds('username', 'Please enter your username')
+            check = false
+        }
+        if(!state.email.trim())
+        {
+            handleSetInvalidFeilds('email', 'Please enter your email')
+            check = false
+        }
+        if(!state.password.trim())
+        {
+            handleSetInvalidFeilds('password', 'Please enter your password')
+            check = false
+        }
+        if(!state.confirmationPassword.trim()) {
+            handleSetInvalidFeilds('confirmationPassword', 'Please confirm your password')
+            check = false
+        }
+        
+        return check            
+    }, [state, handleSetInvalidFeilds]) 
 
     const handleCreateNewAccount = () => {
-        console.log('Create new account')
+        if(validateFormInput()) {
+            console.log('Create new account')
+        }
     }
 
     return (
@@ -29,39 +86,50 @@ function SignUp({ navigation }) {
                 <View style={styles.form}>
                     <View style={styles.formGroup}>
                         <FormInputFeild
-                            value={username}
-                            autoFocus
+                            value={state.username}   
+                            isInvalid={handleCheckInvalid('username')}                    
                             placeholder="User name"
                             icon={<FontAwesome name="user-o" size={26} color="black" />}
-                            handleTextChange={(value) => setUsername(value)}
+                            handleTextChange={(value) => handleInputChange('username', value)}
+                            handleOnFocus={() => handleResetInvalidFeilds('username')}
                         />
+                        {handleCheckInvalid('username') && <Text style={styles.invalidMessage}>{invalidFeilds['username']}</Text>}
                     </View>
                     <View style={styles.formGroup}>
                         <FormInputFeild
-                            value={email}
+                            value={state.email}
                             placeholder="Your email"
+                            isInvalid={handleCheckInvalid('email')}
                             type="email"
                             icon={<Fontisto name="email" size={26} color="black" />}
-                            handleTextChange={(value) => setEmail(value) }
+                            handleTextChange={(value) => handleInputChange('email',value)}
+                            handleOnFocus={() => handleResetInvalidFeilds('email')}
                         />
+                        {handleCheckInvalid('email') && <Text style={styles.invalidMessage}>{invalidFeilds['email']}</Text>}
                     </View>
                     <View style={styles.formGroup}>
                         <FormInputFeild
-                            value={password}
+                            value={state.password}
                             placeholder="Your password"
+                            isInvalid={handleCheckInvalid('password')}
                             isSecure
                             icon={<SimpleLineIcons name="lock" size={26} color="black" />}
-                            handleTextChange={(value) => setPassword(value) }
+                            handleTextChange={(value) => handleInputChange('password', value)}
+                            handleOnFocus={() => handleResetInvalidFeilds('password')}
                         />
+                        {handleCheckInvalid('password') && <Text style={styles.invalidMessage}>{invalidFeilds['password']}</Text>}
                     </View>
                     <View style={styles.formGroup}>
                         <FormInputFeild
-                            value={confirmationPassword}
+                            value={state.confirmationPassword}
                             placeholder="Confirm your password"
+                            isInvalid={handleCheckInvalid('confirmationPassword')}
                             isSecure
                             icon={<SimpleLineIcons name="lock" size={26} color="black" />}
-                            handleTextChange={(value) => setComfirmationPassword(value)}
+                            handleTextChange={(value) => handleInputChange('confirmationPassword', value)}
+                            handleOnFocus={() => handleResetInvalidFeilds('confirmationPassword')}
                         />
+                        {handleCheckInvalid('confirmationPassword') && <Text style={styles.invalidMessage}>{invalidFeilds['confirmationPassword']}</Text>}
                     </View>
                 </View>
 
@@ -93,6 +161,11 @@ const styles = StyleSheet.create({
         marginTop: 26,
         width: '100%',
     },
+    invalidMessage: {
+        fontSize: 13,
+        color : 'red',
+        marginTop: 2,
+    }
 });
 
 export default SignUp;

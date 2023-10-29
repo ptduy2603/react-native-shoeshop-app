@@ -1,3 +1,4 @@
+'use strict'
 import { View, Text, SafeAreaView, StyleSheet } from 'react-native';
 import { useState } from 'react';
 import { Fontisto, SimpleLineIcons } from '@expo/vector-icons';

@@ -3,20 +3,22 @@ import { Ionicons } from "@expo/vector-icons";
 import PropTypes from 'prop-types';
 import { useState } from "react";
 
-function FormInputFeild({ placeholder, icon , value, handleTextChange, isSecure=false, autoFocus=false, type='text' }) {
-    const [hideData, setHideData] = useState(true)
+function FormInputFeild({ placeholder, icon , value, handleTextChange, isSecure=false, autoFocus=false, type='text', isInvalid=false, handleOnFocus }) {
+    const [hideData, setHideData] = useState(false || isSecure)
 
     return ( 
-        <View style={styles.inputContainer}>
+        <View style={[styles.inputContainer, isInvalid && { borderColor: 'red' } ]}>
             {icon}
             <TextInput 
                 style={styles.inputText}
                 placeholder={placeholder}
                 autoFocus={autoFocus}
                 value={value}
-                onChangeText={handleTextChange}
                 inputMode={type}
                 secureTextEntry={hideData}
+                onChangeText={handleTextChange}
+                onFocus={handleOnFocus}
+                spellCheck={false}
             />
             {isSecure ? 
                 (
@@ -25,7 +27,7 @@ function FormInputFeild({ placeholder, icon , value, handleTextChange, isSecure=
                         onPress={() => setHideData(!hideData)}
                     >
                         {
-                            hideData ?  <Ionicons name='eye-off-outline' size={20} /> : <Ionicons name='eye-outline' size={20} />
+                            <Ionicons name={hideData ? 'eye-off-outline' : 'eye-outline'} size={20} color='black' />
                         }
                     </Pressable>
                 ) 
@@ -52,19 +54,17 @@ const styles = StyleSheet.create({
         flex: 1,
         fontSize: 16,
     },
-    eyeIcon: {
-
-    }
 })
 
 FormInputFeild.proptypes = {
     placeholder : PropTypes.string,
+    type : PropTypes.string,
     icon : PropTypes.node,
     value : PropTypes.string.isRequired,
-    handleTextChange : PropTypes.func,
     isSecure : PropTypes.bool,
     autoFocus: PropTypes.bool,
-    type : PropTypes.string,
+    handleTextChange : PropTypes.func,
+    handleOnFocus: PropTypes.func,
 }
 
 export default FormInputFeild
