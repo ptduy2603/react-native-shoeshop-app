@@ -1,7 +1,8 @@
 'use strict'
-import { useReducer, useCallback, useState } from 'react';
-import { View, Text, SafeAreaView, StyleSheet, Keyboard } from 'react-native';
+import { useReducer, useCallback } from 'react';
+import { View, Text, SafeAreaView, StyleSheet, Keyboard, Alert } from 'react-native';
 import { Fontisto, SimpleLineIcons, FontAwesome } from '@expo/vector-icons';
+import axios from 'axios'
 
 import useValidate from '../hooks/useValidate';
 import FormContainer from '../components/FormContainer';
@@ -10,6 +11,7 @@ import FormInputFeild from '../components/FormInputFeild';
 import CustomButton from '../components/CustomButton';
 import NavigateQuestion from '../components/NavigateQuestion';
 import GlobalStyles from '../untils/GlobalStyles';
+import { validEmailRegex } from '../constants'
 
 const initState = {
     username: '',
@@ -25,6 +27,9 @@ const reducer = (state, action) => {
                 ...state,
                 [action.payload.input] : action.payload.data
             }
+        }
+        case 'RESET_VALUE_ALL' : {
+            return initState
         }
         default:
              return state
@@ -52,6 +57,10 @@ function SignUp({ navigation }) {
             handleSetInvalidFeilds('username', 'Please enter your username')
             check = false
         }
+        if(state.confirmationPassword.trim() !== state.password.trim()) {
+            handleSetInvalidFeilds('confirmationPassword', 'Your confirmation is incorrect')
+            check = false
+        }
         if(!state.email.trim())
         {
             handleSetInvalidFeilds('email', 'Please enter your email')
@@ -66,15 +75,35 @@ function SignUp({ navigation }) {
             handleSetInvalidFeilds('confirmationPassword', 'Please confirm your password')
             check = false
         }
+        // check valid email's format
+        if(!state.email.trim().match(validEmailRegex)) {
+            handleSetInvalidFeilds('email', 'Your email is invalid')
+            check = false
+        }
         
         return check            
     }, [state, handleSetInvalidFeilds]) 
 
-    const handleCreateNewAccount = () => {
+    const handleCreateNewAccount = useCallback(() => {
         if(validateFormInput()) {
-            console.log('Create new account')
+            const user = {
+                username: state.username,
+                email : state.email,
+                password : state.password,
+            }
+            // send request to server to create new user
+            axios.get('http://localhost:8000/users/')
+                .then((response) => {
+                    console.log(response)
+                    // Alert.alert("Sign up successfully!", "Message")
+                    // dispatch({ type : 'RESET_VALUE_ALL' })                        
+                })
+                .catch((error) => {
+                    // Alert.alert('Error message', 'Registration failed')
+                    console.log('Registration error: ', error)
+                })
         }
-    }
+    }, [validateFormInput])
 
     return (
         <SafeAreaView style={GlobalStyles.container}>
@@ -165,7 +194,7 @@ const styles = StyleSheet.create({
         fontSize: 13,
         color : 'red',
         marginTop: 2,
-    }
+    },
 });
 
 export default SignUp;

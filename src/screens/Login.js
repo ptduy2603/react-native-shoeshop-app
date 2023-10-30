@@ -1,8 +1,10 @@
 'use strict'
 import { View, Text, SafeAreaView, StyleSheet } from 'react-native';
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { Fontisto, SimpleLineIcons } from '@expo/vector-icons';
 
+import { validEmailRegex } from '../constants'
+import useValidate from '../hooks/useValidate';
 import GlobalStyles from '../untils/GlobalStyles';
 import FormContainer from '../components/FormContainer';
 import FormHeader from '../components/FormHeader';
@@ -14,13 +16,34 @@ function Login({ navigation }) {
     // states
     const [emailInput, setEmailInput] = useState('');
     const [passwordInput, setPasswordInput] = useState('');
+    const { invalidFeilds, handleSetInvalidFeilds, handleResetInvalidFeilds, handleCheckInvalid } = useValidate()
 
     // handler functions
     const handleEmailChange = (value) => setEmailInput(value);
     const handlePasswordChange = (value) => setPasswordInput(value);
-    const handleLogin = () => {
-        console.log('Login');
-    };
+
+    const validateFormInput = useCallback(() => {
+        let check = true
+        if(!emailInput.trim()) {
+            handleSetInvalidFeilds('email', 'Please enter your email')
+            check = false
+        }
+        if(!passwordInput.trim()) {
+            handleSetInvalidFeilds('password', 'Please enter your password')
+            check = false
+        }
+        if(!emailInput.trim().match(validEmailRegex)) {
+            handleSetInvalidFeilds('email', 'Your email is invalid')
+            check = false
+        }
+        return check
+    }, [emailInput,passwordInput, handleSetInvalidFeilds])
+
+    const handleLogin = useCallback(() => {
+        if(validateFormInput()) {
+            console.log('Login successfully')
+        }
+    }, [validateFormInput])
 
     // return JSX
     return (
@@ -37,18 +60,24 @@ function Login({ navigation }) {
                         autoFocus
                         placeholder="Enter your email"
                         type="email"
+                        isInvalid={handleCheckInvalid('email')}
                         icon={<Fontisto name="email" size={26} color="black" />}
                         handleTextChange={handleEmailChange}
+                        handleOnFocus={() => handleResetInvalidFeilds('email')}
                     />
+                    {handleCheckInvalid('email') && <Text style={styles.invalidMessage}>{invalidFeilds['email']}</Text>}
                 </View>
                 <View style={styles.formGroup}>
                     <FormInputFeild
                         value={passwordInput}
                         placeholder="Enter your password"
                         isSecure
+                        isInvalid={handleCheckInvalid('password')}
                         icon={<SimpleLineIcons name="lock" size={26} color="black" />}
                         handleTextChange={handlePasswordChange}
+                        handleOnFocus={() => handleResetInvalidFeilds('password')}
                     />
+                    {handleCheckInvalid('password') && <Text style={styles.invalidMessage}>{invalidFeilds['password']}</Text>}
                 </View>
 
                 <View
@@ -85,6 +114,11 @@ const styles = StyleSheet.create({
         textAlign: 'right',
         fontWeight: '500',
         color: GlobalStyles.primaryColor,
+    },
+    invalidMessage: {
+        fontSize: 13,
+        color : 'red',
+        marginTop: 2,
     },
 });
 
