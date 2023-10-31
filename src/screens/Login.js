@@ -1,22 +1,25 @@
 'use strict'
-import { View, Text, SafeAreaView, StyleSheet } from 'react-native';
+import { View, Text, SafeAreaView, StyleSheet, Alert } from 'react-native';
 import { useState, useCallback } from 'react';
 import { Fontisto, SimpleLineIcons } from '@expo/vector-icons';
 
 import { validEmailRegex } from '../constants'
+import { loginApp } from '../services';
 import useValidate from '../hooks/useValidate';
 import GlobalStyles from '../untils/GlobalStyles';
 import FormContainer from '../components/FormContainer';
 import FormHeader from '../components/FormHeader';
-import FormInputFeild from '../components/FormInputFeild';
+import FormInputField from '../components/FormInputField';
 import CustomButton from '../components/CustomButton';
 import NavigateQuestion from '../components/NavigateQuestion';
+import Apploading from '../components/AppLoading'
 
 function Login({ navigation }) {
     // states
     const [emailInput, setEmailInput] = useState('');
     const [passwordInput, setPasswordInput] = useState('');
-    const { invalidFeilds, handleSetInvalidFeilds, handleResetInvalidFeilds, handleCheckInvalid } = useValidate()
+    const [showLoading, setShowLoading] = useState(false)
+    const { invalidFields, handleSetInvalidFields, handleResetInvalidFields, handleCheckInvalid } = useValidate()
 
     // handler functions
     const handleEmailChange = (value) => setEmailInput(value);
@@ -25,25 +28,44 @@ function Login({ navigation }) {
     const validateFormInput = useCallback(() => {
         let check = true
         if(!emailInput.trim()) {
-            handleSetInvalidFeilds('email', 'Please enter your email')
+            handleSetInvalidFields('email', 'Please enter your email')
             check = false
         }
         if(!passwordInput.trim()) {
-            handleSetInvalidFeilds('password', 'Please enter your password')
+            handleSetInvalidFields('password', 'Please enter your password')
             check = false
         }
         if(!emailInput.trim().match(validEmailRegex)) {
-            handleSetInvalidFeilds('email', 'Your email is invalid')
+            handleSetInvalidFields('email', 'Your email is invalid')
             check = false
         }
         return check
-    }, [emailInput,passwordInput, handleSetInvalidFeilds])
+    }, [emailInput,passwordInput, handleSetInvalidFields])
 
     const handleLogin = useCallback(() => {
         if(validateFormInput()) {
-            console.log('Login successfully')
+            setShowLoading(true)
+            const user = {
+                email : emailInput,
+                password : passwordInput,
+            }
+            setTimeout(() => {
+                setShowLoading(false)
+
+                loginApp(user)
+                    .then(response => {
+                        // get token from server and store in localStorage
+                        const token = response.data.token
+                        console.log(token)
+                        // navigate to MainBottom tabs
+                    })
+                    .catch(error => {        
+                        console.log(error)                
+                        Alert.alert('Error message', error.response.status === 400 ? 'Your password is incorrect' : 'Your email is not exist')
+                    })
+            }, 1500)
         }
-    }, [validateFormInput])
+    }, [validateFormInput, emailInput, passwordInput, setShowLoading])
 
     // return JSX
     return (
@@ -55,7 +77,7 @@ function Login({ navigation }) {
                 />
 
                 <View style={styles.formGroup}>
-                    <FormInputFeild
+                    <FormInputField
                         value={emailInput}
                         autoFocus
                         placeholder="Enter your email"
@@ -63,21 +85,21 @@ function Login({ navigation }) {
                         isInvalid={handleCheckInvalid('email')}
                         icon={<Fontisto name="email" size={26} color="black" />}
                         handleTextChange={handleEmailChange}
-                        handleOnFocus={() => handleResetInvalidFeilds('email')}
+                        handleOnFocus={() => handleResetInvalidFields('email')}
                     />
-                    {handleCheckInvalid('email') && <Text style={styles.invalidMessage}>{invalidFeilds['email']}</Text>}
+                    {handleCheckInvalid('email') && <Text style={styles.invalidMessage}>{invalidFields['email']}</Text>}
                 </View>
                 <View style={styles.formGroup}>
-                    <FormInputFeild
+                    <FormInputField
                         value={passwordInput}
                         placeholder="Enter your password"
                         isSecure
                         isInvalid={handleCheckInvalid('password')}
                         icon={<SimpleLineIcons name="lock" size={26} color="black" />}
                         handleTextChange={handlePasswordChange}
-                        handleOnFocus={() => handleResetInvalidFeilds('password')}
+                        handleOnFocus={() => handleResetInvalidFields('password')}
                     />
-                    {handleCheckInvalid('password') && <Text style={styles.invalidMessage}>{invalidFeilds['password']}</Text>}
+                    {handleCheckInvalid('password') && <Text style={styles.invalidMessage}>{invalidFields['password']}</Text>}
                 </View>
 
                 <View
@@ -101,6 +123,7 @@ function Login({ navigation }) {
                     />
                 </View>
             </FormContainer>
+            { showLoading && <Apploading /> }
         </SafeAreaView>
     );
 }

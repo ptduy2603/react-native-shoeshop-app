@@ -7,7 +7,7 @@ import { createNewUser } from '../services';
 import useValidate from '../hooks/useValidate';
 import FormContainer from '../components/FormContainer';
 import FormHeader from '../components/FormHeader';
-import FormInputFeild from '../components/FormInputFeild';
+import FormInputField from '../components/FormInputField';
 import CustomButton from '../components/CustomButton';
 import NavigateQuestion from '../components/NavigateQuestion';
 import AppLoading from '../components/AppLoading';
@@ -40,7 +40,7 @@ const reducer = (state, action) => {
 function SignUp({ navigation }) {
     const [state, dispatch] = useReducer(reducer, initState);
     const [showLoading, setShowLoading] = useState(false)
-    const { invalidFeilds, handleSetInvalidFeilds, handleResetInvalidFeilds, handleCheckInvalid } = useValidate();
+    const { invalidFields, handleSetInvalidFields, handleResetInvalidFields, handleCheckInvalid } = useValidate();
 
     const handleInputChange = (input, value) => {
         dispatch({
@@ -56,33 +56,33 @@ function SignUp({ navigation }) {
         let check = true;
         Keyboard.dismiss();
         if (!state.username.trim()) {
-            handleSetInvalidFeilds('username', 'Please enter your username');
+            handleSetInvalidFields('username', 'Please enter your username');
             check = false;
         }
         if (state.confirmationPassword.trim() !== state.password.trim()) {
-            handleSetInvalidFeilds('confirmationPassword', 'Your confirmation is incorrect');
+            handleSetInvalidFields('confirmationPassword', 'Your confirmation is incorrect');
             check = false;
         }
         if (!state.email.trim()) {
-            handleSetInvalidFeilds('email', 'Please enter your email');
+            handleSetInvalidFields('email', 'Please enter your email');
             check = false;
         }
         if (!state.password.trim()) {
-            handleSetInvalidFeilds('password', 'Please enter your password');
+            handleSetInvalidFields('password', 'Please enter your password');
             check = false;
         }
         if (!state.confirmationPassword.trim()) {
-            handleSetInvalidFeilds('confirmationPassword', 'Please confirm your password');
+            handleSetInvalidFields('confirmationPassword', 'Please confirm your password');
             check = false;
         }
         // check valid email's format
         if (!state.email.trim().match(validEmailRegex)) {
-            handleSetInvalidFeilds('email', 'Your email is invalid');
+            handleSetInvalidFields('email', 'Your email is invalid');
             check = false;
         }
 
         return check;
-    }, [state, handleSetInvalidFeilds]);
+    }, [state, handleSetInvalidFields]);
 
     const handleCreateNewAccount = useCallback(() => {
         if (validateFormInput()) {
@@ -94,18 +94,17 @@ function SignUp({ navigation }) {
             };        
             // send request to server to create new user
             setTimeout(() => {
+                setShowLoading(false)
                 createNewUser(user)
                     .then((response) => {
                         console.log(response);
                         dispatch({ type : 'RESET_VALUE_ALL' })
-                        Alert.alert("Message", "Sign up successfully!")
-                        // navigate to SignIn
+                        Alert.alert("Message", "Sign up successfully!", [{ text : 'OK', onPress: () => navigation.navigate('Login') }])
                     })
                     .catch((error) => {
                         Alert.alert('Error message', 'Registration failed, your mail is existent')
                         console.log('Registration error: ', error);
                     });
-                setShowLoading(false)
             }, 2000)
         }
     }, [validateFormInput, setShowLoading, createNewUser]);
@@ -119,48 +118,48 @@ function SignUp({ navigation }) {
                 />
                 <View style={styles.form}>
                     <View style={styles.formGroup}>
-                        <FormInputFeild
+                        <FormInputField
                             value={state.username}
                             isInvalid={handleCheckInvalid('username')}
                             placeholder="User name"
                             icon={<FontAwesome name="user-o" size={26} color="black" />}
                             handleTextChange={(value) => handleInputChange('username', value)}
-                            handleOnFocus={() => handleResetInvalidFeilds('username')}
+                            handleOnFocus={() => handleResetInvalidFields('username')}
                         />
                         {handleCheckInvalid('username') && (
-                            <Text style={styles.invalidMessage}>{invalidFeilds['username']}</Text>
+                            <Text style={styles.invalidMessage}>{invalidFields['username']}</Text>
                         )}
                     </View>
                     <View style={styles.formGroup}>
-                        <FormInputFeild
+                        <FormInputField
                             value={state.email}
                             placeholder="Your email"
                             isInvalid={handleCheckInvalid('email')}
                             type="email"
                             icon={<Fontisto name="email" size={26} color="black" />}
                             handleTextChange={(value) => handleInputChange('email', value)}
-                            handleOnFocus={() => handleResetInvalidFeilds('email')}
+                            handleOnFocus={() => handleResetInvalidFields('email')}
                         />
                         {handleCheckInvalid('email') && (
-                            <Text style={styles.invalidMessage}>{invalidFeilds['email']}</Text>
+                            <Text style={styles.invalidMessage}>{invalidFields['email']}</Text>
                         )}
                     </View>
                     <View style={styles.formGroup}>
-                        <FormInputFeild
+                        <FormInputField
                             value={state.password}
                             placeholder="Your password"
                             isInvalid={handleCheckInvalid('password')}
                             isSecure
                             icon={<SimpleLineIcons name="lock" size={26} color="black" />}
                             handleTextChange={(value) => handleInputChange('password', value)}
-                            handleOnFocus={() => handleResetInvalidFeilds('password')}
+                            handleOnFocus={() => handleResetInvalidFields('password')}
                         />
                         {handleCheckInvalid('password') && (
-                            <Text style={styles.invalidMessage}>{invalidFeilds['password']}</Text>
+                            <Text style={styles.invalidMessage}>{invalidFields['password']}</Text>
                         )}
                     </View>
                     <View style={styles.formGroup}>
-                        <FormInputFeild
+                        <FormInputField
                             value={state.confirmationPassword}
                             placeholder="Confirm your password"
                             isInvalid={handleCheckInvalid('confirmationPassword')}
@@ -169,11 +168,11 @@ function SignUp({ navigation }) {
                             handleTextChange={(value) =>
                                 handleInputChange('confirmationPassword', value)
                             }
-                            handleOnFocus={() => handleResetInvalidFeilds('confirmationPassword')}
+                            handleOnFocus={() => handleResetInvalidFields('confirmationPassword')}
                         />
                         {handleCheckInvalid('confirmationPassword') && (
                             <Text style={styles.invalidMessage}>
-                                {invalidFeilds['confirmationPassword']}
+                                {invalidFields['confirmationPassword']}
                             </Text>
                         )}
                     </View>

@@ -2,27 +2,27 @@ import { useState } from "react"
 
 // Custom hook for form
 const useValidate = () => {
-    const [invalidFeilds, setInvalidFeilds] = useState({})
+    const [invalidFields, setInvalidFields] = useState({})
 
-    const handleSetInvalidFeilds = (input, message) => {
-        setInvalidFeilds(prevState => ({ 
+    const handleSetInvalidFields = (input, message) => {
+        setInvalidFields(prevState => ({ 
             ...prevState,
             [input] : message
         }))
     }
 
-    const handleResetInvalidFeilds = (input) => {
-       setInvalidFeilds(prevState => {
+    const handleResetInvalidFields = (input) => {
+        setInvalidFields(prevState => {
             const {[input]: removeFeild, ...updatedInvalidFeilds} = prevState
             return updatedInvalidFeilds
        })
     }
 
     const handleCheckInvalid = (input) => {
-        return Object.keys(invalidFeilds).includes(input)
+        return Object.keys(invalidFields).includes(input)
     }
 
-    return { invalidFeilds, handleCheckInvalid, handleResetInvalidFeilds, handleSetInvalidFeilds }
+    return { invalidFields, handleCheckInvalid, handleSetInvalidFields, handleResetInvalidFields }
 }
 
 export default useValidate
