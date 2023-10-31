@@ -1,15 +1,16 @@
 'use strict';
-import { useReducer, useCallback } from 'react';
+import { useReducer, useCallback, useState } from 'react';
 import { View, Text, SafeAreaView, StyleSheet, Keyboard, Alert } from 'react-native';
 import { Fontisto, SimpleLineIcons, FontAwesome } from '@expo/vector-icons';
-import axios from 'axios';
 
+import { createNewUser } from '../services';
 import useValidate from '../hooks/useValidate';
 import FormContainer from '../components/FormContainer';
 import FormHeader from '../components/FormHeader';
 import FormInputFeild from '../components/FormInputFeild';
 import CustomButton from '../components/CustomButton';
 import NavigateQuestion from '../components/NavigateQuestion';
+import AppLoading from '../components/AppLoading';
 import GlobalStyles from '../untils/GlobalStyles';
 import { validEmailRegex } from '../constants';
 
@@ -38,8 +39,8 @@ const reducer = (state, action) => {
 
 function SignUp({ navigation }) {
     const [state, dispatch] = useReducer(reducer, initState);
-    const { invalidFeilds, handleSetInvalidFeilds, handleResetInvalidFeilds, handleCheckInvalid } =
-        useValidate();
+    const [showLoading, setShowLoading] = useState(false)
+    const { invalidFeilds, handleSetInvalidFeilds, handleResetInvalidFeilds, handleCheckInvalid } = useValidate();
 
     const handleInputChange = (input, value) => {
         dispatch({
@@ -85,28 +86,29 @@ function SignUp({ navigation }) {
 
     const handleCreateNewAccount = useCallback(() => {
         if (validateFormInput()) {
+            setShowLoading(true)
             const user = {
                 username: state.username,
                 email: state.email,
                 password: state.password,
-            };
+            };        
             // send request to server to create new user
-            axios
-                .post('http://10.0.2.2:8000/users/register', user)
-                .then((response) => {
-                    console.log(response);
-                    Alert.alert("Sign up successfully!", "Message")
-                    dispatch({ type : 'RESET_VALUE_ALL' })
-
-                    // Loading effect and navigate to SignIn screen
-                    
-                })
-                .catch((error) => {
-                    Alert.alert('Error message', 'Registration failed, your mail is existent')
-                    console.log('Registration error: ', error);
-                });
+            setTimeout(() => {
+                createNewUser(user)
+                    .then((response) => {
+                        console.log(response);
+                        dispatch({ type : 'RESET_VALUE_ALL' })
+                        Alert.alert("Message", "Sign up successfully!")
+                        // navigate to SignIn
+                    })
+                    .catch((error) => {
+                        Alert.alert('Error message', 'Registration failed, your mail is existent')
+                        console.log('Registration error: ', error);
+                    });
+                setShowLoading(false)
+            }, 2000)
         }
-    }, [validateFormInput]);
+    }, [validateFormInput, setShowLoading, createNewUser]);
 
     return (
         <SafeAreaView style={GlobalStyles.container}>
@@ -189,6 +191,7 @@ function SignUp({ navigation }) {
                     />
                 </View>
             </FormContainer>
+            { showLoading && <AppLoading /> }
         </SafeAreaView>
     );
 }
