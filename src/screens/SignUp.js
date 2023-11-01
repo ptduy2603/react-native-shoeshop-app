@@ -185,7 +185,7 @@ function SignUp({ navigation }) {
                 <View style={{ marginTop: 30 }}>
                     <NavigateQuestion
                         question="Already have an account?"
-                        command="Sign In"
+                        command="Login now!"
                         handleNavigate={() => navigation.navigate('Login')}
                     />
                 </View>

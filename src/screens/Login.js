@@ -2,6 +2,8 @@
 import { View, Text, SafeAreaView, StyleSheet, Alert } from 'react-native';
 import { useState, useCallback } from 'react';
 import { Fontisto, SimpleLineIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useDispatch } from 'react-redux';
 
 import { validEmailRegex } from '../constants'
 import { loginApp } from '../services';
@@ -13,6 +15,7 @@ import FormInputField from '../components/FormInputField';
 import CustomButton from '../components/CustomButton';
 import NavigateQuestion from '../components/NavigateQuestion';
 import Apploading from '../components/AppLoading'
+import { setUserToken } from '../redux/actions'
 
 function Login({ navigation }) {
     // states
@@ -20,6 +23,7 @@ function Login({ navigation }) {
     const [passwordInput, setPasswordInput] = useState('');
     const [showLoading, setShowLoading] = useState(false)
     const { invalidFields, handleSetInvalidFields, handleResetInvalidFields, handleCheckInvalid } = useValidate()
+    const dispatch = useDispatch()
 
     // handler functions
     const handleEmailChange = (value) => setEmailInput(value);
@@ -54,18 +58,20 @@ function Login({ navigation }) {
 
                 loginApp(user)
                     .then(response => {
-                        // get token from server and store in localStorage
+                        // get token from server and store in asyncStorage
                         const token = response.data.token
-                        console.log(token)
-                        // navigate to MainBottom tabs
+                        // save token to asyncStorage so user don't need to login the next time
+                        // AsyncStorage.setItem('userToken', token)
+                        // navigate to MainBottom tabs by set auState in redux store
+                        dispatch(setUserToken(token))
                     })
                     .catch(error => {        
                         console.log(error)                
-                        Alert.alert('Error message', error.response.status === 400 ? 'Your password is incorrect' : 'Your email is not exist')
+                        Alert.alert('Login error', error.response.status === 400 ? 'Your password is incorrect' : 'Your email is not exist')
                     })
-            }, 1500)
+            }, 1400)
         }
-    }, [validateFormInput, emailInput, passwordInput, setShowLoading])
+    }, [validateFormInput, emailInput, passwordInput, setShowLoading, dispatch])
 
     // return JSX
     return (
@@ -118,7 +124,7 @@ function Login({ navigation }) {
                 <View style={{ marginTop: 30, width: '100%' }}>
                     <NavigateQuestion
                         question="Don't have an account?"
-                        command="Sign Up"
+                        command="Sign up here!"
                         handleNavigate={() => navigation.navigate('SignUp')}
                     />
                 </View>
