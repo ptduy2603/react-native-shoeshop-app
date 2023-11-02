@@ -1,22 +1,49 @@
 'use strict'
-import { View, Text, SafeAreaView, StyleSheet } from 'react-native';
-import { useState, useCallback } from 'react';
+import { View, Text, SafeAreaView, StyleSheet, Alert, Pressable } from 'react-native';
+import { useState, useCallback, useEffect } from 'react';
 import { Fontisto, SimpleLineIcons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useDispatch } from 'react-redux';
 
 import { validEmailRegex } from '../constants'
+import { loginApp } from '../services';
 import useValidate from '../hooks/useValidate';
 import GlobalStyles from '../untils/GlobalStyles';
 import FormContainer from '../components/FormContainer';
 import FormHeader from '../components/FormHeader';
-import FormInputFeild from '../components/FormInputFeild';
+import FormInputField from '../components/FormInputField';
 import CustomButton from '../components/CustomButton';
 import NavigateQuestion from '../components/NavigateQuestion';
+import Apploading from '../components/AppLoading'
+import { setCurrentUserAction } from '../redux/actions'
 
 function Login({ navigation }) {
     // states
     const [emailInput, setEmailInput] = useState('');
     const [passwordInput, setPasswordInput] = useState('');
-    const { invalidFeilds, handleSetInvalidFeilds, handleResetInvalidFeilds, handleCheckInvalid } = useValidate()
+    const [showLoading, setShowLoading] = useState(false)
+    const { invalidFields, handleSetInvalidFields, handleResetInvalidFields, handleCheckInvalid } = useValidate()
+    const dispatch = useDispatch()
+
+    // if user already login then check userToken and navigate right to mainBottom
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            try {
+                const userToken = await AsyncStorage.getItem('userToken')
+                const  userEmail = await AsyncStorage.getItem('currentUserEmail')
+                const username = await AsyncStorage.getItem('currentUsername')
+                // if user logined then navigate to main bottom tab
+                if(userToken) {
+                    dispatch(setCurrentUserAction(userEmail, username, true))
+                }
+            }
+            catch(error)
+            {
+                console.log('error message', error)
+            }
+        }
+        checkLoginStatus()
+    }, [])
 
     // handler functions
     const handleEmailChange = (value) => setEmailInput(value);
@@ -25,25 +52,48 @@ function Login({ navigation }) {
     const validateFormInput = useCallback(() => {
         let check = true
         if(!emailInput.trim()) {
-            handleSetInvalidFeilds('email', 'Please enter your email')
+            handleSetInvalidFields('email', 'Please enter your email')
             check = false
         }
         if(!passwordInput.trim()) {
-            handleSetInvalidFeilds('password', 'Please enter your password')
+            handleSetInvalidFields('password', 'Please enter your password')
             check = false
         }
         if(!emailInput.trim().match(validEmailRegex)) {
-            handleSetInvalidFeilds('email', 'Your email is invalid')
+            handleSetInvalidFields('email', 'Your email is invalid')
             check = false
         }
         return check
-    }, [emailInput,passwordInput, handleSetInvalidFeilds])
+    }, [emailInput,passwordInput, handleSetInvalidFields])
 
     const handleLogin = useCallback(() => {
         if(validateFormInput()) {
-            console.log('Login successfully')
+            setShowLoading(true)
+            const user = {
+                email : emailInput,
+                password : passwordInput,
+            }
+
+            setTimeout(() => {
+                setShowLoading(false)
+                loginApp(user)
+                    .then(response => {
+                        // get token from server and store in asyncStorage
+                        const token = response.data.token
+                        // save token to asyncStorage so user don't need to login the next time
+                        AsyncStorage.setItem('userToken', JSON.stringify(token))
+                        AsyncStorage.setItem('currentUserEmail', JSON.stringify(user.email))
+                        AsyncStorage.setItem('currentUsername', JSON.stringify(response.data.username))
+                        // navigate to MainBottom tabs by set authState in redux store
+                        dispatch(setCurrentUserAction(user.email, response.data.username, true))
+                    })
+                    .catch(error => {        
+                        console.log(error)                
+                        Alert.alert('Login error', error.response.status === 400 ? 'Your password is incorrect' : 'Your email is not exist')
+                    })
+            }, 1200)
         }
-    }, [validateFormInput])
+    }, [validateFormInput, emailInput, passwordInput, setShowLoading, dispatch])
 
     // return JSX
     return (
@@ -55,7 +105,7 @@ function Login({ navigation }) {
                 />
 
                 <View style={styles.formGroup}>
-                    <FormInputFeild
+                    <FormInputField
                         value={emailInput}
                         autoFocus
                         placeholder="Enter your email"
@@ -63,21 +113,21 @@ function Login({ navigation }) {
                         isInvalid={handleCheckInvalid('email')}
                         icon={<Fontisto name="email" size={26} color="black" />}
                         handleTextChange={handleEmailChange}
-                        handleOnFocus={() => handleResetInvalidFeilds('email')}
+                        handleOnFocus={() => handleResetInvalidFields('email')}
                     />
-                    {handleCheckInvalid('email') && <Text style={styles.invalidMessage}>{invalidFeilds['email']}</Text>}
+                    {handleCheckInvalid('email') && <Text style={styles.invalidMessage}>{invalidFields['email']}</Text>}
                 </View>
                 <View style={styles.formGroup}>
-                    <FormInputFeild
+                    <FormInputField
                         value={passwordInput}
                         placeholder="Enter your password"
                         isSecure
                         isInvalid={handleCheckInvalid('password')}
                         icon={<SimpleLineIcons name="lock" size={26} color="black" />}
                         handleTextChange={handlePasswordChange}
-                        handleOnFocus={() => handleResetInvalidFeilds('password')}
+                        handleOnFocus={() => handleResetInvalidFields('password')}
                     />
-                    {handleCheckInvalid('password') && <Text style={styles.invalidMessage}>{invalidFeilds['password']}</Text>}
+                    {handleCheckInvalid('password') && <Text style={styles.invalidMessage}>{invalidFields['password']}</Text>}
                 </View>
 
                 <View
@@ -86,7 +136,11 @@ function Login({ navigation }) {
                         width: '100%',
                     }}
                 >
-                    <Text style={styles.forgotPassword}>Forgot Password</Text>
+                    <Pressable
+                        onPress={() => navigation.navigate('ForgotPassword')}
+                    >
+                        <Text style={styles.forgotPassword}>Forgot Password</Text>
+                    </Pressable>                   
                 </View>
 
                 <View style={{ marginTop: 20, width: '100%' }}>
@@ -96,11 +150,12 @@ function Login({ navigation }) {
                 <View style={{ marginTop: 30, width: '100%' }}>
                     <NavigateQuestion
                         question="Don't have an account?"
-                        command="Sign Up"
+                        command="Sign up here!"
                         handleNavigate={() => navigation.navigate('SignUp')}
                     />
                 </View>
             </FormContainer>
+            { showLoading && <Apploading /> }
         </SafeAreaView>
     );
 }

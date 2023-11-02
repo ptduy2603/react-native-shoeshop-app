@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 24,
         fontWeight: '800',
-        marginTop: 40,
+        marginTop: 30,
         color: GlobalStyles.primaryColor,
     }
 })
