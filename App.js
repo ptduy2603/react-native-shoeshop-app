@@ -7,5 +7,6 @@ export default function App() {
        <Provider store={store}>
             <Navigators />
         </Provider>      
+
     )
 }
