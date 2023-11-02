@@ -1,8 +1,12 @@
 // auth actions
-export const setUserToken = (token) => {
+export const setCurrentUserAction = (email, username, isAuthentication) => {
     return {
-        type : 'SET_USER_TOKEN',
-        payload : token
+        type : 'SET_CURRENT_USER',
+        payload : {
+            email,
+            username,
+            isAuthentication
+        }
     }
 }
 

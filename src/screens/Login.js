@@ -1,6 +1,6 @@
 'use strict'
-import { View, Text, SafeAreaView, StyleSheet, Alert } from 'react-native';
-import { useState, useCallback } from 'react';
+import { View, Text, SafeAreaView, StyleSheet, Alert, Pressable } from 'react-native';
+import { useState, useCallback, useEffect } from 'react';
 import { Fontisto, SimpleLineIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useDispatch } from 'react-redux';
@@ -15,7 +15,7 @@ import FormInputField from '../components/FormInputField';
 import CustomButton from '../components/CustomButton';
 import NavigateQuestion from '../components/NavigateQuestion';
 import Apploading from '../components/AppLoading'
-import { setUserToken } from '../redux/actions'
+import { setCurrentUserAction } from '../redux/actions'
 
 function Login({ navigation }) {
     // states
@@ -24,6 +24,26 @@ function Login({ navigation }) {
     const [showLoading, setShowLoading] = useState(false)
     const { invalidFields, handleSetInvalidFields, handleResetInvalidFields, handleCheckInvalid } = useValidate()
     const dispatch = useDispatch()
+
+    // if user already login then check userToken and navigate right to mainBottom
+    useEffect(() => {
+        const checkLoginStatus = async () => {
+            try {
+                const userToken = await AsyncStorage.getItem('userToken')
+                const  userEmail = await AsyncStorage.getItem('currentUserEmail')
+                const username = await AsyncStorage.getItem('currentUsername')
+                // if user logined then navigate to main bottom tab
+                if(userToken) {
+                    dispatch(setCurrentUserAction(userEmail, username, true))
+                }
+            }
+            catch(error)
+            {
+                console.log('error message', error)
+            }
+        }
+        checkLoginStatus()
+    }, [])
 
     // handler functions
     const handleEmailChange = (value) => setEmailInput(value);
@@ -53,23 +73,25 @@ function Login({ navigation }) {
                 email : emailInput,
                 password : passwordInput,
             }
+
             setTimeout(() => {
                 setShowLoading(false)
-
                 loginApp(user)
                     .then(response => {
                         // get token from server and store in asyncStorage
                         const token = response.data.token
                         // save token to asyncStorage so user don't need to login the next time
-                        // AsyncStorage.setItem('userToken', token)
-                        // navigate to MainBottom tabs by set auState in redux store
-                        dispatch(setUserToken(token))
+                        AsyncStorage.setItem('userToken', JSON.stringify(token))
+                        AsyncStorage.setItem('currentUserEmail', JSON.stringify(user.email))
+                        AsyncStorage.setItem('currentUsername', JSON.stringify(response.data.username))
+                        // navigate to MainBottom tabs by set authState in redux store
+                        dispatch(setCurrentUserAction(user.email, response.data.username, true))
                     })
                     .catch(error => {        
                         console.log(error)                
                         Alert.alert('Login error', error.response.status === 400 ? 'Your password is incorrect' : 'Your email is not exist')
                     })
-            }, 1400)
+            }, 1200)
         }
     }, [validateFormInput, emailInput, passwordInput, setShowLoading, dispatch])
 
@@ -114,7 +136,11 @@ function Login({ navigation }) {
                         width: '100%',
                     }}
                 >
-                    <Text style={styles.forgotPassword}>Forgot Password</Text>
+                    <Pressable
+                        onPress={() => navigation.navigate('ForgotPassword')}
+                    >
+                        <Text style={styles.forgotPassword}>Forgot Password</Text>
+                    </Pressable>                   
                 </View>
 
                 <View style={{ marginTop: 20, width: '100%' }}>

@@ -12,8 +12,23 @@ export const loginApp = (user) => {
    return axios.post(`${baseUrl}/users/login`, user)
 }
 
+// Request to reset password using email api
+export const requestResetPassword = (email) => {
+   return axios.post(`${baseUrl}/users/resetpassword`, { email })
+}
+
+// Comfirm reset password OTP
+export const verifyResetPassword = (token, otp, userId) => {
+   return axios.post(`${baseUrl}/users/resetpassword/${userId}/${token}`, { otp })
+}
+
+// Reset password after verify
+export const resetPassword = (userId, token, password) => {
+   return axios.post(`${baseUrl}/users/changepassword/${userId}/${token}`, { password })
+}
+
+
 //Get all users from database 
 export const getUsers = () => {
    return axios.get(`${baseUrl}/users`)
 }
-

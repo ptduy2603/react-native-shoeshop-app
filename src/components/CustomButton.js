@@ -2,10 +2,10 @@ import { Pressable, Text, StyleSheet } from "react-native"
 import GlobalStyles from "../untils/GlobalStyles"
 import PropTypes from 'prop-types';
 
-function CustomButton({ title, buttonColor , handleOnPress, disabled=false}) {
+function CustomButton({ title, buttonColor , handleOnPress, disabled=false, extraStyles={}}) {
     return (
         <Pressable
-            style={[styles.button, buttonColor ? {backgroundColor: buttonColor} : {}]}
+            style={[styles.button, buttonColor ? {backgroundColor: buttonColor} : {}, extraStyles]}
             disabled={disabled}
             onPress={handleOnPress}
         >

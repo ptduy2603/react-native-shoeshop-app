@@ -5,12 +5,12 @@ import AuthStack from "./AuthStack"
 import BottomTabs from "./BottomTabs"
 
 function Navigators() {
-    // check if have user token then render MainBottom , else render AuthStack
-    const userToken = useSelector(state =>  state.authReducer.userToken)
+    // check if isAuthentication then render MainBottom , else render AuthStack
+    const isAuthentication = useSelector(state =>  state.authReducer.isAuthentication)
     
     return (
         <NavigationContainer>
-            {Boolean(userToken) ? <BottomTabs /> : <AuthStack /> }
+            {isAuthentication ? <BottomTabs /> : <AuthStack /> }
         </NavigationContainer>
     )
 }
