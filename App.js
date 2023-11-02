@@ -2,8 +2,8 @@ import Navigators from './src/navigators';
 import Home from './src/screens/Home';
 export default function App() {
     return (
-       <Navigators />
-    //    <Home />
+    //    <Navigators />
+       <Home />
     )
 }
 
