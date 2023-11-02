@@ -27,8 +27,7 @@ export const resetPassword = (userId, token, password) => {
    return axios.post(`${baseUrl}/users/changepassword/${userId}/${token}`, { password })
 }
 
-
-//Get all users from database 
+//Get all of users from database 
 export const getUsers = () => {
    return axios.get(`${baseUrl}/users`)
 }
