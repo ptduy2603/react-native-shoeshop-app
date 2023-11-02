@@ -1,9 +1,10 @@
 import React from 'react';
-import { TouchableOpacity,Image, StatusBar, View, Text, SafeAreaView, StyleSheet, Pressable } from 'react-native';
+import { ScrollView,TouchableOpacity,Image, StatusBar, View, Text, SafeAreaView, StyleSheet, Pressable } from 'react-native';
 import { useState, useCallback } from 'react';
 import { Fontisto, SimpleLineIcons, Ionicons } from '@expo/vector-icons';
 import GlobalStyles from '../untils/GlobalStyles';
 import SearchItem from '../components/SearchItem';
+import ProductCard from '../components/ProductCard';
 
 function Home() {
     const listShoe = [
@@ -22,42 +23,36 @@ function Home() {
     ]
     return (
         <SafeAreaView style={[GlobalStyles.container, styles.Home_container]}>
-            <StatusBar style="auto" />
-
-            <View style={styles.userInfo}>
-                <View style={styles.hiUser}>
-                    <Image
-                        style={styles.userImage}
-                        source={require('../../assets/images/avatar1.jpg')}
-                    />
-
-                    <View style={styles.greetingUser}>
-                        <Text style={styles.hiMember}>Hi, Illya!</Text>
-                        <Text style={styles.roleMember}>Gold Member</Text>
+                <StatusBar style="auto" />
+    
+                <View style={styles.userInfo}>
+                    <View style={styles.hiUser}>
+                        <Image
+                            style={styles.userImage}
+                            source={require('../../assets/images/avatar1.jpg')}
+                        />
+    
+                        <View style={styles.greetingUser}>
+                            <Text style={styles.hiMember}>Hi, Illya!</Text>
+                            <Text style={styles.roleMember}>Gold Member</Text>
+                        </View>
                     </View>
+                    
+    
+                    <TouchableOpacity style={styles.notificationIconButton}>
+                        <View style={styles.notificationIcon}>
+                            <Ionicons name="notifications-outline" size={40} color="black" />
+                        </View>
+                    </TouchableOpacity>
                 </View>
+    
+                <SearchItem />
+    
+                <Text style={{marginTop:10, width: '100%', fontWeight: 'bold', fontSize: 30, borderBottomColor: 'black', borderBottomWidth: 1}}>Sản phẩm</Text>
+    
+                <ProductCard />
                 
-
-                <TouchableOpacity style={styles.notificationIconButton}>
-                    <View style={styles.notificationIcon}>
-                        <Ionicons name="notifications-outline" size={40} color="black" />
-                    </View>
-                </TouchableOpacity>
-            </View>
-
-            <SearchItem />
-
-            <Text style={{marginTop:10, fontWeight: 'bold', fontSize: 30, borderBottomColor: 'black', borderBottomWidth: 1}}>Sản phẩm</Text>
-
-            <View style={{flexDirection: 'row', alignItems: 'center', flexWrap: 'wrap'}}>
-                {listShoe.map((item, index) => (
-                    <Pressable style={{width: 150,margin: 10 }} key={item.id}> 
-                        <Image style={{width:150, height: 200, resizeMode:'contain'}} source={{uri:item?.image}} />
-                        <Text>{item.title}</Text>
-                        <Text>Giá: {item.price} VNĐ</Text>
-                    </Pressable>
-                ))}
-            </View>
+            
         </SafeAreaView>
     );
 }
