@@ -6,6 +6,7 @@ import Cart from '../screens/Cart'
 import Favourite from '../screens/Favourite'
 import Profile from '../screens/Profile'
 import GlobalStyles from '../untils/GlobalStyles'
+import Notification from '../screens/Notification'
 
 const Tab = createBottomTabNavigator()
 
@@ -41,7 +42,7 @@ function BottomTabs () {
                     tabBarIcon: ({ focused }) => {
                         return <FontAwesome name={focused ? 'heart' : 'heart-o'} size={22} color={focused ? GlobalStyles.primaryColor : '#000'} />
                     },
-                    tabBarBadge: 3,
+                    tabBarBadge: 3, // temporary hard code
                 }}
             />
             <Tab.Screen 
@@ -52,6 +53,17 @@ function BottomTabs () {
                     tabBarIcon: ({ focused }) => {
                         return <Ionicons name={focused ? 'cart-sharp' : 'cart-outline'} size={28} color={focused ? GlobalStyles.primaryColor : '#000'} />
                     }
+                }}
+            />
+            <Tab.Screen 
+                name='notification'
+                component={Notification}
+                options={{
+                    tabBarLabel: 'Notification',
+                    tabBarIcon: ({ focused }) => {
+                        return <Ionicons name={focused ? 'notifications' : 'notifications-outline'} size={28} color={focused ? GlobalStyles.primaryColor : '#000'} />
+                    },
+                    tabBarBadge: 1 // temporary hard code
                 }}
             />
             <Tab.Screen 

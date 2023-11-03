@@ -6,18 +6,18 @@ import GlobalStyles from '../untils/GlobalStyles';
 import { setCurrentUserAction } from '../redux/actions'
 
 function Profile() {
-    const currentUsername = useSelector(state => state.authReducer.username)
+    const currentUser = useSelector(state => state.authReducer.currentUser)
     const dispatch = useDispatch()
 
     return ( 
         <View style={GlobalStyles.container}>
-            <Text>Welcome {currentUsername} to my app</Text>
+            <Text>Welcome {currentUser.username} to my app</Text>
             <View style={{ marginTop: 20 }}>
                 <Button 
                     title='Log out'
                     onPress={() => {
                         AsyncStorage.clear()
-                        dispatch(setCurrentUserAction('','', false))
+                        dispatch(setCurrentUserAction({}, false))
                     }}
                 />
             </View>

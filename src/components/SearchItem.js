@@ -3,52 +3,45 @@ import {
     Pressable,
     TextInput,
     TouchableOpacity,
-    Image,
-    StatusBar,
     View,
-    Text,
-    SafeAreaView,
     StyleSheet,
 } from 'react-native';
-import GlobalStyles from '../untils/GlobalStyles';
 import { Entypo, Ionicons } from '@expo/vector-icons';
 
 function SearchItem() {
     return (
-        <View style={Style.search}>
+        <View style={styles.searchContainer}>
             <Pressable>
                 <Entypo
-                    style={{ paddingLeft: 10 }}
                     name="magnifying-glass"
-                    size={40}
+                    size={36}
                     color="black"
                 />
             </Pressable>
-            <TextInput style={{flex: 1}} placeholder="Search..." />
+            <TextInput style={styles.searchInput} placeholder="Search..." spellCheck={false}/>
             <TouchableOpacity>
-                <Ionicons style={Style.filterIcon} name="filter" size={40} color="black" />
+                <Ionicons style={styles.filterIcon} name="filter" size={30} color="black" />
             </TouchableOpacity>
         </View>
     );
 }
-const Style = StyleSheet.create({
-    searchBox: {},
-    search: {
+const styles = StyleSheet.create({
+    searchContainer: {
+        width: '100%',
         justifyContent: 'space-between',
+        marginVertical: 20,
+        padding: 4,
+        paddingHorizontal: 8,
         flexDirection: 'row',
         alignItems: 'center',
-        marginHorizontal: 10,
-        gap: 10,
         backgroundColor: 'white',
-        borderRadius: 20,
-        height: 36,
-        borderWidth: 1,
-        width: '100%',
-        height: 40,
-        marginTop: 10,
+        borderRadius: 14,
+        borderWidth: 1,     
     },
-    filterIcon: {
-        paddingRight: 10, 
+    searchInput : {
+        flex: 1,
+        fontSize: 16,
+        marginLeft : 10,
     },
 });
 

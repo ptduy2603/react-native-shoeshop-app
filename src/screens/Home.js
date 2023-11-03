@@ -1,99 +1,158 @@
-import React from 'react';
-import { ScrollView,TouchableOpacity,Image, StatusBar, View, Text, SafeAreaView, StyleSheet, Pressable } from 'react-native';
-import { useState, useCallback } from 'react';
-import { Fontisto, SimpleLineIcons, Ionicons } from '@expo/vector-icons';
+import { ScrollView,Image, View, Text, SafeAreaView, StyleSheet, Pressable, Alert } from 'react-native';
+import { useSelector } from 'react-redux';
+
 import GlobalStyles from '../untils/GlobalStyles';
 import SearchItem from '../components/SearchItem';
 import ProductCard from '../components/ProductCard';
+import { categories } from '../data'
 
 function Home() {
+    // demo data 
     const listShoe = [
         {
             id: '0',
-            title: 'Giày Thể Thao Cao Cấp Nam Bitis Hunter Street đế',
+            title: 'Bitis Hunter Street đế cao để có thể cscscscscs',
             price: '1275000',
-            image: "https://product.hstatic.net/1000230642/product/z4703770946058_6a961cc309a854194a287ac00ff4a7cb__1__88e555b3752b4bda9b54bbd1fd85ecd9.jpg",
+            image: 'https://product.hstatic.net/1000230642/product/z4703770946058_6a961cc309a854194a287ac00ff4a7cb__1__88e555b3752b4bda9b54bbd1fd85ecd9.jpg',
         },
         {
             id: '1',
-            title: 'Giày Thể Thao Nam Bitis Hunter Core Z Collection DSMH06400',
+            title: 'Bitis Hunter Core Z Collection DSMH06400',
             price: '736000',
-            image: "https://product.hstatic.net/1000230642/product/dsc_0019_fb488f4fc9f348948f78f7c6dac6e08a_grande.jpg",
+            image: 'https://product.hstatic.net/1000230642/product/dsc_0019_fb488f4fc9f348948f78f7c6dac6e08a_grande.jpg',
         },
-    ]
+        {
+            id: '2',
+            title: 'Bitis Hunter Core Z Collection DSMH06400',
+            price: '736000',
+            image: 'https://product.hstatic.net/1000230642/product/dsc_0019_fb488f4fc9f348948f78f7c6dac6e08a_grande.jpg',
+        },
+        {
+            id: '3',
+            title: 'Bitis Hunter Core Z Collection DSMH06400',
+            price: '736000',
+            image: 'https://product.hstatic.net/1000230642/product/dsc_0019_fb488f4fc9f348948f78f7c6dac6e08a_grande.jpg',
+        },
+        {
+            id: '4',
+            title: 'Bitis Hunter Core Z Collection DSMH06400',
+            price: '736000',
+            image: 'https://product.hstatic.net/1000230642/product/dsc_0019_fb488f4fc9f348948f78f7c6dac6e08a_grande.jpg',
+        },
+    ];
+    // get current username and avatar
+    const currentUser = useSelector(state => state.authReducer.currentUser)
+
     return (
-        <SafeAreaView style={[GlobalStyles.container, styles.Home_container]}>
-                <StatusBar style="auto" />
-    
-                <View style={styles.userInfo}>
-                    <View style={styles.hiUser}>
-                        <Image
-                            style={styles.userImage}
-                            source={require('../../assets/images/avatar1.jpg')}
-                        />
-    
-                        <View style={styles.greetingUser}>
-                            <Text style={styles.hiMember}>Hi, Illya!</Text>
-                            <Text style={styles.roleMember}>Gold Member</Text>
-                        </View>
-                    </View>
-                    
-    
-                    <TouchableOpacity style={styles.notificationIconButton}>
-                        <View style={styles.notificationIcon}>
-                            <Ionicons name="notifications-outline" size={40} color="black" />
-                        </View>
-                    </TouchableOpacity>
+        <SafeAreaView style={[GlobalStyles.container, styles.homeContainer]}>    
+            {/* greeting user */}
+            <View style={styles.header}>
+                <Image
+                    style={styles.userImage}
+                    source={currentUser.avatar || require('../../assets/images/default_avatar.png')}
+                />
+
+                <View style={styles.greetingUser}>
+                    <Text style={styles.hiMember}>Hi, {currentUser.username}!</Text>
+                    <Text style={styles.subTitle}>Let choose your suitable shoes</Text>
                 </View>
-    
-                <SearchItem />
-    
-                <Text style={{marginTop:10, width: '100%', fontWeight: 'bold', fontSize: 30, borderBottomColor: 'black', borderBottomWidth: 1}}>Sản phẩm</Text>
-    
-                <ProductCard />
+            </View>                    
+        
+            {/* search component */}
+            <SearchItem />
+
+            {/* Render categories */}
+            <ScrollView 
+                style={styles.categorieContainer} 
+                horizontal 
+                showsHorizontalScrollIndicator={false}
+            >
+                {
+                    categories.map((categorie, index) => {
+                        return (
+                            <View>
+                                <Text>{categorie.name}</Text>
+                                <Image source={categorie.image} style={styles.categorieImage} />
+                            </View>
+                        )
+                    })
+                }
+            </ScrollView>
+
+            <ScrollView 
+                style={styles.wrapper}
+                showsVerticalScrollIndicator={false}
+            >
+               <View style={{ paddingVertical: 20 }}>
+                    <Text style={styles.productTitle}>Loại sản phẩm 1</Text>
+                    {
+                        listShoe.map((shoe, index) => {
+                            return (
+                                <ProductCard 
+                                    key={shoe.toString()+index}
+                                    product={shoe}
+                                    handleOnPress={() => Alert.alert('Message', 'Navigate to ShoeDetail screen')}
+                                />
+                            )
+                        })
+                    }
+               </View>
+            </ScrollView>                          
                 
-            
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    Home_container: {
-       marginTop: 0,
+    homeContainer : {
+        paddingVertical: 4,
+        paddingHorizontal: 10,
     },
-    userInfo: {
+    header: {
         flexDirection: 'row',
-        margin: 20,
         width: '100%',
-        justifyContent: 'space-between'
-    },
-    hiUser: {
-        flexDirection: 'row',
+        alignItems: 'center',
     },
     userImage: {
-        width: 60,
-        height: 60,
-        borderRadius: 30,
+        width: 48,
+        height: 48,
+        borderRadius: 24,
+        objectFit : 'cover',
     },
     greetingUser: {
-        flexDirection: 'column',
-        marginLeft: 10,
-        
+        marginLeft: 10,        
     },
     hiMember: {
-        fontSize: 24,
-        fontWeight: 'bold',
+        fontSize: 20,
+        fontWeight: '600',
     },
-    roleMember: {
+    subTitle: {
         fontSize: 16,
-        opacity: 0.6,
+        opacity: 0.5,
     },
-    notificationIconButton: {
-       
+    wrapper : {
+        width: '100%',
+        padding: 0,
+        margin: 0,
     },
-    notificationIcon: {
-        
+    productTitle : {
+        marginTop:10, 
+        width: '100%', 
+        fontWeight: '600', 
+        fontSize: 26, 
+        borderBottomColor: '#333', 
+        paddingBottom: 4,
+        borderBottomWidth: 1,
+        marginBottom: 10,
     },
+    categorieContainer : {
+        width: '100%',
+    },
+    categorieImage : {
+        width: 24,
+        height: 24,
+        borderRadius: 12,
+    }
 });
 
 export default Home;

@@ -29,12 +29,11 @@ function Login({ navigation }) {
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
-                const userToken = await AsyncStorage.getItem('userToken')
-                const  userEmail = await AsyncStorage.getItem('currentUserEmail')
-                const username = await AsyncStorage.getItem('currentUsername')
+                const result = await AsyncStorage.getItem('currentUser')
+                const currentUser = JSON.parse(result)
                 // if user logined then navigate to main bottom tab
-                if(userToken) {
-                    dispatch(setCurrentUserAction(userEmail, username, true))
+                if(currentUser) {
+                    dispatch(setCurrentUserAction(currentUser, true))
                 }
             }
             catch(error)
@@ -81,11 +80,14 @@ function Login({ navigation }) {
                         // get token from server and store in asyncStorage
                         const token = response.data.token
                         // save token to asyncStorage so user don't need to login the next time
-                        AsyncStorage.setItem('userToken', JSON.stringify(token))
-                        AsyncStorage.setItem('currentUserEmail', JSON.stringify(user.email))
-                        AsyncStorage.setItem('currentUsername', JSON.stringify(response.data.username))
+                        const currentUser = {
+                            token, 
+                            username : response.data.username, 
+                            email: user.email,
+                        }
+                        AsyncStorage.setItem('currentUser', JSON.stringify(currentUser))
                         // navigate to MainBottom tabs by set authState in redux store
-                        dispatch(setCurrentUserAction(user.email, response.data.username, true))
+                        dispatch(setCurrentUserAction(currentUser, true))
                     })
                     .catch(error => {        
                         console.log(error)                

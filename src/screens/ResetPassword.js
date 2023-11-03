@@ -40,7 +40,6 @@ function ResetPassword({ route }) {
 
     }, [handleSetInvalidFields])
 
-    // Continue.....
     const handleResetPassword = () => {
         if(validateInput()) {
             setShowLoading(true)
@@ -48,11 +47,14 @@ function ResetPassword({ route }) {
                 setShowLoading(false)
                 resetPassword(userId,token, password)
                     .then(response => {
-                        AsyncStorage.setItem('userToken', response.data.token)
-                        AsyncStorage.setItem('currentUsername', response.data.username)
-                        AsyncStorage.setItem('currentUserEmail', response.data.email)
+                        const currentUser = {
+                            token : response.data.token,
+                            username: response.data.username,
+                            email : response.data.email,
+                        }
+                        AsyncStorage.setItem('currentUser', JSON.stringify(currentUser))
                         Alert.alert('Message', 'Reset your password successfully!', [{ text: 'OK', onPress: () => {
-                            dispatch(setCurrentUserAction(response.data.email, response.data.username, true))
+                            dispatch(setCurrentUserAction(currentUser, true))
                         } }])
                     })
                     .catch(error => {

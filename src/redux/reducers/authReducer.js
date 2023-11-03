@@ -1,6 +1,5 @@
 var initState = {
-    email: '',
-    username: '',
+    currentUser : {} , // current user includes (userToken, username, email, [avatar],...)
     isAuthentication : false
 }
 
@@ -9,8 +8,7 @@ const authReducer = (state=initState, action) => {
         case 'SET_CURRENT_USER' : {
             return {
                 ...state,
-                email: action.payload.email,
-                username : action.payload.username,
+                currentUser : action.payload.user,
                 isAuthentication : action.payload.isAuthentication
             }
         }           
