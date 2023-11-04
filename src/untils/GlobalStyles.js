@@ -4,11 +4,11 @@ const GlobalStyles = StyleSheet.create({
     primaryColor : '#0081ff',
     container : {
         flex: 1,
+        paddingVertical: 20,
+        paddingHorizontal: 26,
         backgroundColor : '#fafafc',
         alignItems: 'center',
         marginTop : StatusBar.currentHeight || 0,
-        paddingHorizontal: 20,
-        paddingVertical: 10,
     }
 })
 

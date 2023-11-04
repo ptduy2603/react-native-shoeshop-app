@@ -14,7 +14,7 @@ function SearchItem() {
             <Pressable>
                 <Entypo
                     name="magnifying-glass"
-                    size={36}
+                    size={30}
                     color="black"
                 />
             </Pressable>
@@ -35,7 +35,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         backgroundColor: 'white',
-        borderRadius: 14,
+        borderRadius: 8,
         borderWidth: 1,     
     },
     searchInput : {

@@ -65,8 +65,7 @@ function ForgotPassword({ navigation }) {
                 <View>
                     <FormInputField
                         value={email}
-                        placeholder="Enter your email"
-                        autoFocus
+                        placeholder="Enter your email"                        
                         type="email"
                         isInvalid={handleCheckInvalid('email')}
                         icon={<Fontisto name="email" size={26} color="black" />}

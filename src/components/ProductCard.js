@@ -7,15 +7,19 @@ import {
     View,
 } from 'react-native';
 
+import formatCurrency from '../untils/formatCurrency'
+
 function ProductCard({ product, handleOnPress }) {    
+    const { specials : { colors }, name, price } = product
+
     return (
         <Pressable 
             style={styles.cardWrapper}
             onPress={handleOnPress}
         >
             <Image 
-                style={[styles.imageProduct]} 
-                source={{ uri: product.image }} 
+                style={styles.imageProduct} 
+                source={{ uri: colors[0].image }} 
             />
             <View style={styles.cardInfo}>
                 <Text
@@ -23,9 +27,9 @@ function ProductCard({ product, handleOnPress }) {
                     numberOfLines={2}
                     ellipsizeMode='tail'
                 >
-                    {product.title}
+                    {name}
                 </Text>
-                <Text style={[styles.priceProduct]}>Giá: {product.price} VNĐ</Text>
+                <Text style={[styles.priceProduct]}>Giá: {formatCurrency(price)} VNĐ</Text>
             </View>
         </Pressable>
     );
@@ -33,10 +37,11 @@ function ProductCard({ product, handleOnPress }) {
 
 const styles = StyleSheet.create({
     cardWrapper : {
-        width: 160,       
+        width: 180,   
+        margin: 4,  
         alignItems: 'center',
         borderWidth: 1,
-        borderRadius: 10,
+        borderRadius: 4,
         justifyContent: 'space-between',
         overflow: 'hidden',
         shadowOpacity: 0.5,

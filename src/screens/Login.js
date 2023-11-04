@@ -15,6 +15,7 @@ import FormInputField from '../components/FormInputField';
 import CustomButton from '../components/CustomButton';
 import NavigateQuestion from '../components/NavigateQuestion';
 import Apploading from '../components/AppLoading'
+import SocialsLogin from '../components/SocialsLogin';
 import { setCurrentUserAction } from '../redux/actions'
 
 function Login({ navigation }) {
@@ -99,7 +100,7 @@ function Login({ navigation }) {
 
     // return JSX
     return (
-        <SafeAreaView style={GlobalStyles.container}>
+        <SafeAreaView style={[GlobalStyles.container, { justifyContent: 'center' }]}>
             <FormContainer>
                 <FormHeader
                     image={require('../../assets/images/logo.png')}
@@ -156,6 +157,10 @@ function Login({ navigation }) {
                         handleNavigate={() => navigation.navigate('SignUp')}
                     />
                 </View>
+
+                {/* Login with socials section */}
+                <SocialsLogin />
+                
             </FormContainer>
             { showLoading && <Apploading /> }
         </SafeAreaView>
