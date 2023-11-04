@@ -19,17 +19,10 @@ export const categories = [
     },
     {
         id: '4',
-        name: 'Giày thể thao',
-        type: 'sport',
+        name: 'Giày cao gót',
+        type: 'highHeel',
         image: require('../../assets/images/sport.png'),
     },
-    {
-        id: '5',
-        name: 'Giày thể thao',
-        type: 'sport',
-        image: require('../../assets/images/sport.png'),
-    },
-
 ];
 
 export const sliderImages = [
@@ -39,7 +32,7 @@ export const sliderImages = [
     require('../../assets/images/banner3.jpg'),
 ];
 
-// mock data for products, We will add these in database later
+// mock data for products, We will add these into database later
 export const products = [
     {
       "title": "Giày Hunter Bitis",

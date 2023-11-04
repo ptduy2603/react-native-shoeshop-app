@@ -1,3 +1,4 @@
+'use strict'
 import { View, Text, StyleSheet, SafeAreaView, Alert } from 'react-native';
 import { SimpleLineIcons } from '@expo/vector-icons'
 import { useDispatch } from 'react-redux';

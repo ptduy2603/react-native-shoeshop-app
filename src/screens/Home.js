@@ -1,4 +1,5 @@
-import { ScrollView,Image, View, Text, SafeAreaView, StyleSheet, Platform, SectionList, FlatList } from 'react-native';
+'use strict';
+import { ScrollView, Image, View, Text, SafeAreaView, StyleSheet, FlatList } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import GlobalStyles from '../untils/GlobalStyles';
@@ -6,111 +7,144 @@ import SearchItem from '../components/SearchItem';
 import ProductCard from '../components/ProductCard';
 import CategoryButton from '../components/CategoryButton';
 
-import { categories, products } from '../data'
+import { categories, products } from '../data';
+import { useState } from 'react';
 
-function Home() {
+function Home({ navigation }) {
+    const [currentCategory, setCurrentCategory] = useState('')
     // get current username and avatar
-    const currentUser = useSelector(state => state.authReducer.currentUser)
+    const currentUser = useSelector((state) => state.authReducer.currentUser);
 
-    // handler fuction 
-    handleRenderProduct = (data) => {
+    // handler fuctions
+    const handleRenderHeader = () => {
+        // components in this function will be render before FlatList data
         return (
-            <FlatList 
-                style={styles.productSectionWrapper}
-                showsVerticalScrollIndicator={false}
-                data={data}
-                numColumns={2}
-                removeClippedSubviews
-                keyExtractor={(item) => item.code}
-                renderItem={({ item : shoe }) => {
-                    return (
-                        <ProductCard 
-                            product={shoe}
-                            handleOnPress={() => console.log('Show product detail')}
-                        />
-                    )
-                }}
-            />
-        )
+            <>
+                {/* greeting user */}
+                <View style={styles.header}>
+                    <Image
+                        style={styles.userImage}
+                        source={
+                            currentUser.avatar || require('../../assets/images/default_avatar.png')
+                        }
+                    />
+
+                    <View style={styles.greetingUser}>
+                        <Text style={styles.hiMember}>Hi, {currentUser.username}!</Text>
+                        <Text style={styles.subTitle}>Let choose your suitable shoes</Text>
+                    </View>
+                </View>
+
+                {/* Search component */}
+                <SearchItem />
+
+                {/* Render categories */}
+                <ScrollView
+                    style={styles.categorieContainer}
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                >
+                    {categories.map((category) => {
+                        return (
+                            <CategoryButton
+                                category={category}
+                                key={category.id}
+                                isActive={category.type === currentCategory}
+                                handleOnPress={() => {
+                                    if(category.type !== currentCategory)
+                                        setCurrentCategory(category.type)
+                                    else setCurrentCategory('')
+                                }}
+                            />
+                        );
+                    })}
+                </ScrollView>
+            </>
+        );
+    };
+
+    const handleRenderFooter = () => {
+        // code in this function will be render after data in FlatList
+        // use for paging 
     }
 
+    const handleRenderProduct = (data) => {
+        return (
+            <FlatList
+                data={data}
+                style={styles.productSectionWrapper}
+                keyExtractor={(item, index) => item + index}
+                numColumns={2}
+                showsVerticalScrollIndicator={false}
+                renderItem={({ item }) => {
+                    return (
+                        <ProductCard
+                            product={item}
+                            handleOnPress={() => navigation.navigate('productDetail', { product : item })}
+                        />
+                    );
+                }}
+            />
+        );
+    };
+
     return (
-        <SafeAreaView style={[GlobalStyles.container, styles.homeContainer]}>    
-            {/* greeting user */}
-            <View style={styles.header}>
-                <Image
-                    style={styles.userImage}
-                    source={currentUser.avatar || require('../../assets/images/default_avatar.png')}
-                />
-
-                <View style={styles.greetingUser}>
-                    <Text style={styles.hiMember}>Hi, {currentUser.username}!</Text>
-                    <Text style={styles.subTitle}>Let choose your suitable shoes</Text>
-                </View>
-            </View>                    
-        
-            {/* Search component */}
-            <SearchItem />
-
-            {/* Render categories */}
-            <ScrollView 
-                style={styles.categorieContainer} 
-                horizontal 
-                showsHorizontalScrollIndicator={false}
-            >
-                {
-                    categories.map((category) => {
-                        return (
-                            <CategoryButton 
-                                category={category}
-                                key={category.id}  
-                                handleOnPress={() => { console.log('Change category') }}
-                            />
-                        )
-                    })
-                }
-            </ScrollView>       
-
-            {/* User FlatList to render products */}
-            <FlatList 
+        <SafeAreaView style={[GlobalStyles.container, styles.homeContainer]}>
+            {/* use nested FlatList to render products */}
+            <FlatList
                 data={products}
                 style={styles.productsContainer}
                 keyExtractor={(item, index) => item + index}
                 showsVerticalScrollIndicator={false}
+                ListHeaderComponent={handleRenderHeader}
+                ListFooterComponent={handleRenderFooter}
                 renderItem={({ item, index }) => {
                     return (
-                        <>
-                            <Text style={[styles.productTitle, index === 0 && { marginTop : 0 }]}>{item.title}</Text>
-                            {handleRenderProduct(item.data, index)}    
-                        </>
-                    )
+                        item.data[0].genre === currentCategory || currentCategory === '' ?
+                        (
+                            <>
+                                <Text style={styles.productSectionTitle}>{item.title}</Text>
+                                {handleRenderProduct(item.data)}
+                                {index !== products.length - 1 && (
+                                    <Text
+                                        style={{
+                                            height: 1,
+                                            borderColor: '#c3c3c3',
+                                            borderWidth: 1,
+                                            marginTop: 16,
+                                        }}
+                                    />
+                                )}
+                            </>
+                        )
+                        : null
+                    );
                 }}
-            
             />
-                
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
-    homeContainer : {
+    homeContainer: {
         paddingHorizontal: 8,
-        paddingTop : Platform.OS === 'android' ? 20 : 0,
-        paddingBottom: 0,
+        paddingTop: 0,
+        paddingBottom: 10,
     },
     header: {
         flexDirection: 'row',
         width: '100%',
         alignItems: 'center',
+        marginTop: 20,
     },
     userImage: {
         width: 48,
         height: 48,
         borderRadius: 24,
-        objectFit : 'cover',
+        objectFit: 'cover',
     },
     greetingUser: {
-        marginLeft: 10,        
+        marginLeft: 10,
     },
     hiMember: {
         fontSize: 20,
@@ -125,21 +159,18 @@ const styles = StyleSheet.create({
     },
     productsContainer: {
         width: '100%',
-        marginTop: 20,
     },
     productSectionWrapper: {
         width: '100%',
         justifyContent: 'center',
         rowGap: 4,
     },
-    productTitle : {
-        width: '100%', 
-        fontWeight: '600', 
-        marginTop: 40,
-        fontSize: 20, 
+    productSectionTitle: {
+        width: '100%',
+        fontWeight: '600',
+        marginTop: 26,
+        fontSize: 20,
         paddingBottom: 4,
-        borderBottomColor: '#c3c3c3', 
-        borderBottomWidth: 1,
         marginBottom: 10,
     },
 });

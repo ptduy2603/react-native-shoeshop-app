@@ -1,16 +1,19 @@
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { createBottomTabNavigator} from '@react-navigation/bottom-tabs'
+import { createStackNavigator } from '@react-navigation/stack'
 import { Ionicons, FontAwesome} from '@expo/vector-icons'
 
 import Home from '../screens/Home'
 import Cart from '../screens/Cart'
 import Favourite from '../screens/Favourite'
 import Profile from '../screens/Profile'
-import GlobalStyles from '../untils/GlobalStyles'
 import Notification from '../screens/Notification'
+import ProductDetail from '../screens/ProductDetail'
+import GlobalStyles from '../untils/GlobalStyles'
 
+const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
 
-function BottomTabs () {
+const Main = () => {
     return (
         <Tab.Navigator
             initialRouteName='home'
@@ -80,4 +83,28 @@ function BottomTabs () {
     )
 }
 
+function BottomTabs () {
+    return (
+        <Stack.Navigator
+            initialRouteName='main'
+        >
+            <Stack.Screen  
+                name='main'
+                component={Main}
+                options={{
+                    headerShown : false,
+                }}
+            />
+            <Stack.Screen  
+                name='productDetail'
+                options={{
+                    headerTitle : 'Product Detail'
+                }}
+                component={ProductDetail}
+            />
+        </Stack.Navigator>
+    )
+}
+
 export default BottomTabs
+

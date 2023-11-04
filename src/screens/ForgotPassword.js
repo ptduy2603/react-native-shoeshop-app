@@ -1,3 +1,4 @@
+'use strict'
 import { View, Text, StyleSheet, SafeAreaView, Alert } from 'react-native';
 import { Fontisto } from '@expo/vector-icons';
 import { useState } from 'react';

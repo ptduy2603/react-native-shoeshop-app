@@ -26,7 +26,7 @@ function Login({ navigation }) {
     const { invalidFields, handleSetInvalidFields, handleResetInvalidFields, handleCheckInvalid } = useValidate()
     const dispatch = useDispatch()
 
-    // if user already login then check userToken and navigate right to mainBottom
+    // if user already logined then check userToken and navigate straight to BottomTabs
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
@@ -78,15 +78,14 @@ function Login({ navigation }) {
                 setShowLoading(false)
                 loginApp(user)
                     .then(response => {
-                        // get token from server and store in asyncStorage
-                        const token = response.data.token
                         // save token to asyncStorage so user don't need to login the next time
                         const currentUser = {
-                            token, 
+                            token : response.data.token, 
                             username : response.data.username, 
                             email: user.email,
                         }
                         AsyncStorage.setItem('currentUser', JSON.stringify(currentUser))
+                        
                         // navigate to MainBottom tabs by set authState in redux store
                         dispatch(setCurrentUserAction(currentUser, true))
                     })
@@ -110,7 +109,6 @@ function Login({ navigation }) {
                 <View style={styles.formGroup}>
                     <FormInputField
                         value={emailInput}
-                        autoFocus
                         placeholder="Enter your email"
                         type="email"
                         isInvalid={handleCheckInvalid('email')}
