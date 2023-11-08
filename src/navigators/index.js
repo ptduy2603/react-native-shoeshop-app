@@ -2,7 +2,7 @@ import { NavigationContainer } from "@react-navigation/native"
 import { useSelector } from "react-redux"
 
 import AuthStack from "./AuthStack"
-import BottomTabs from "./BottomTabs"
+import Main from "./Main"
 
 function Navigators() {
     // check if isAuthentication then render MainBottom , else render AuthStack
@@ -10,7 +10,7 @@ function Navigators() {
     
     return (
         <NavigationContainer>
-            {isAuthentication ? <BottomTabs /> : <AuthStack /> }
+            {isAuthentication ? <Main /> : <AuthStack /> }
         </NavigationContainer>
     )
 }

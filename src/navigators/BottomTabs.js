@@ -1,5 +1,4 @@
 import { createBottomTabNavigator} from '@react-navigation/bottom-tabs'
-import { createStackNavigator } from '@react-navigation/stack'
 import { Ionicons, FontAwesome} from '@expo/vector-icons'
 
 import Home from '../screens/Home'
@@ -7,13 +6,11 @@ import Cart from '../screens/Cart'
 import Favourite from '../screens/Favourite'
 import Profile from '../screens/Profile'
 import Notification from '../screens/Notification'
-import ProductDetail from '../screens/ProductDetail'
 import GlobalStyles from '../untils/GlobalStyles'
 
-const Stack = createStackNavigator()
 const Tab = createBottomTabNavigator()
 
-const Main = () => {
+function BottomTabs () {
     return (
         <Tab.Navigator
             initialRouteName='home'
@@ -22,8 +19,14 @@ const Main = () => {
                 tabBarActiveTintColor: GlobalStyles.primaryColor,
                 tabBarInactiveTintColor : '#000',
                 tabBarLabelStyle: {
-                    fontSize: 14,
+                    fontSize: 12,
+                    marginBottom : 4,
                     fontWeight: '600',
+                },
+                tabBarStyle : {
+                    padding : 8,
+                    height : 60,
+                    backgroundColor : '#e6f9ff',
                 }
             }}
         >
@@ -41,7 +44,7 @@ const Main = () => {
                 name='favourite'
                 component={Favourite}
                 options={{
-                    tabBarLabel: 'Favourite',
+                    tabBarLabel: 'Favourites',
                     tabBarIcon: ({ focused }) => {
                         return <FontAwesome name={focused ? 'heart' : 'heart-o'} size={22} color={focused ? GlobalStyles.primaryColor : '#000'} />
                     },
@@ -62,9 +65,9 @@ const Main = () => {
                 name='notification'
                 component={Notification}
                 options={{
-                    tabBarLabel: 'Notification',
+                    tabBarLabel: 'Notifications',
                     tabBarIcon: ({ focused }) => {
-                        return <Ionicons name={focused ? 'notifications' : 'notifications-outline'} size={28} color={focused ? GlobalStyles.primaryColor : '#000'} />
+                        return <Ionicons name={focused ? 'notifications' : 'notifications-outline'} size={26} color={focused ? GlobalStyles.primaryColor : '#000'} />
                     },
                     tabBarBadge: 1 // temporary hard code
                 }}
@@ -80,29 +83,6 @@ const Main = () => {
                 }}
             />
         </Tab.Navigator>
-    )
-}
-
-function BottomTabs () {
-    return (
-        <Stack.Navigator
-            initialRouteName='main'
-        >
-            <Stack.Screen  
-                name='main'
-                component={Main}
-                options={{
-                    headerShown : false,
-                }}
-            />
-            <Stack.Screen  
-                name='productDetail'
-                options={{
-                    headerTitle : 'Product Detail'
-                }}
-                component={ProductDetail}
-            />
-        </Stack.Navigator>
     )
 }
 

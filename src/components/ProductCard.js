@@ -11,12 +11,12 @@ import {
 
 import formatCurrency from '../untils/formatCurrency'
 
-function ProductCard({ product, handleOnPress }) {    
+function ProductCard({ product, handleOnPress, extraStyles={} }) {    
     const { specials : { colors }, name, price } = product
 
     return (
         <Pressable 
-            style={styles.cardWrapper}
+            style={[styles.cardWrapper, extraStyles]}
             onPress={handleOnPress}
         >
             <Image 
@@ -39,12 +39,12 @@ function ProductCard({ product, handleOnPress }) {
 
 const styles = StyleSheet.create({
     cardWrapper : {
-        width: 180,   
-        margin: 4,  
+        width: 180, 
         alignItems: 'center',
         justifyContent: 'space-between',
         borderWidth: 1,
-        borderRadius: 4,
+        borderRadius: 4,         
+        borderColor : 'rgba(0,0,0,0.4)',
         overflow: 'hidden',
         shadowOpacity: 0.5,
         shadowColor: '#000',

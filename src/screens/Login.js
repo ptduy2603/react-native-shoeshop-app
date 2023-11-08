@@ -79,15 +79,10 @@ function Login({ navigation }) {
                 loginApp(user)
                     .then(response => {
                         // save token to asyncStorage so user don't need to login the next time
-                        const currentUser = {
-                            token : response.data.token, 
-                            username : response.data.username, 
-                            email: user.email,
-                        }
-                        AsyncStorage.setItem('currentUser', JSON.stringify(currentUser))
+                        AsyncStorage.setItem('currentUser', JSON.stringify(response.data.currentUser))
                         
                         // navigate to MainBottom tabs by set authState in redux store
-                        dispatch(setCurrentUserAction(currentUser, true))
+                        dispatch(setCurrentUserAction(response.data.currentUser, true))
                     })
                     .catch(error => {        
                         console.log(error)                

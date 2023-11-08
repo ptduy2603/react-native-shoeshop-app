@@ -24,9 +24,7 @@ function Home({ navigation }) {
                 <View style={styles.header}>
                     <Image
                         style={styles.userImage}
-                        source={
-                            currentUser.avatar || require('../../assets/images/default_avatar.png')
-                        }
+                        source={currentUser.avatar ? { uri : currentUser.avatar } : require('../../assets/images/default_avatar.png')}
                     />
 
                     <View style={styles.greetingUser}>
@@ -76,10 +74,15 @@ function Home({ navigation }) {
                 keyExtractor={(item, index) => item + index}
                 numColumns={2}
                 showsVerticalScrollIndicator={false}
-                renderItem={({ item }) => {
+                contentContainerStyle={{ alignItems : 'center', justifyContent : 'space-between' }}
+                renderItem={({ item, index}) => {
                     return (
                         <ProductCard
                             product={item}
+                            extraStyles={{ 
+                                marginLeft : index%2 === 0 ? 0 : 6,
+                                marginRight : index%2 === 0 ? 6 : 0,
+                            }}
                             handleOnPress={() => navigation.navigate('productDetail', { product : item })}
                         />
                     );
@@ -141,7 +144,7 @@ const styles = StyleSheet.create({
         width: 48,
         height: 48,
         borderRadius: 24,
-        objectFit: 'cover',
+        objectFit: 'contain',
     },
     greetingUser: {
         marginLeft: 10,
@@ -162,8 +165,9 @@ const styles = StyleSheet.create({
     },
     productSectionWrapper: {
         width: '100%',
-        justifyContent: 'center',
-        rowGap: 4,
+        rowGap: 12,
+        flexDirection : 'row',
+        flexWrap : 'wrap',
     },
     productSectionTitle: {
         width: '100%',

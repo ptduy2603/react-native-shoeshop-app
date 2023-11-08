@@ -20,8 +20,8 @@ export const categories = [
     {
         id: '4',
         name: 'Giày cao gót',
-        type: 'highHeel',
-        image: require('../../assets/images/sport.png'),
+        type: 'highHeels',
+        image: require('../../assets/images/high_heels.png'),
     },
 ];
 
