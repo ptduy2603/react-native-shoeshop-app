@@ -7,15 +7,16 @@ import SearchItem from '../components/SearchItem';
 import ProductCard from '../components/ProductCard';
 import CategoryButton from '../components/CategoryButton';
 
-import { categories, products } from '../data';
+import { categories } from '../data';
 import { useState } from 'react';
 
 function Home({ navigation }) {
     const [currentCategory, setCurrentCategory] = useState('')
-    // get current username and avatar
+    // get current user
     const currentUser = useSelector((state) => state.authReducer.currentUser);
+    // get all products from redux store
+    const products = useSelector(state => state.productReducer.products)
 
-    // handler fuctions
     const handleRenderHeader = () => {
         // components in this function will be render before FlatList data
         return (
@@ -123,7 +124,7 @@ function Home({ navigation }) {
                         : null
                     );
                 }}
-            />
+            />            
         </SafeAreaView>
     );
 }

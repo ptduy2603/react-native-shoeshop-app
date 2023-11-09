@@ -12,7 +12,7 @@ import {
 import formatCurrency from '../untils/formatCurrency'
 
 function ProductCard({ product, handleOnPress, extraStyles={} }) {    
-    const { specials : { colors }, name, price } = product
+    const { colors, name, price } = product
 
     return (
         <Pressable 

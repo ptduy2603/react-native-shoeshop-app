@@ -31,3 +31,13 @@ export const resetPassword = (userId, token, password) => {
 export const getUsers = () => {
    return axios.get(`${baseUrl}/users`)
 }
+
+// Add new product into database
+export const addProductToDatabase = (product) => {
+   return axios.post(`${baseUrl}/products/addproduct`, { product })
+}
+
+// Fetch all products from database sorting by categories
+export const fetchProductsFromServer = () => {
+   return axios.get(`${baseUrl}/products`)
+}

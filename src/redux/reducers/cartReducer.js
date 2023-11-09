@@ -1,4 +1,4 @@
-import { ADD_PRODUCT } from "../actions"
+import { ADD_PRODUCT_TO_CART } from "../actions"
 
 const initState = {
     cart : [] 
@@ -7,7 +7,7 @@ const initState = {
 const cartReducer = (state=initState, action) => {
     switch(action.type)
     {
-        case ADD_PRODUCT :
+        case ADD_PRODUCT_TO_CART :
             return {
                 ...state,
                 cart : [...state.cart, action.payload]
