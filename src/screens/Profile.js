@@ -4,6 +4,7 @@ import { Fontisto, FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import GlobalStyles from '../untils/GlobalStyles';
+import OptionTag from '../components/OptionTag';
 import { setCurrentUserAction } from '../redux/actions'
 
 function Profile({ navigation }) {
@@ -26,27 +27,21 @@ function Profile({ navigation }) {
                     <Text style={styles.username}>{currentUser.username}</Text>
                 </View>
                 <View style={styles.container}>
-                    <Pressable
-                        style={styles.optionContainer}
-                        onPress={() => navigation.navigate('AccountDetail', { user : currentUser })}
-                    >
-                        <View style={{ flexDirection : 'row', alignItems : 'center' }}>
-                            <FontAwesome name='user' color={GlobalStyles.primaryColor} size={24}/>
-                            <Text style={styles.text}>My Account</Text>
-                        </View>
-                        <Fontisto name='angle-right' color={GlobalStyles.primaryColor} size={18} />
-                    </Pressable>
+                    <OptionTag 
+                        title="My account"
+                        icon={<FontAwesome name='user' color={GlobalStyles.primaryColor} size={24}/>}
+                        isPrimaryTag
+                        handleOnPress={() => navigation.navigate('AccountDetail', { user : currentUser })}
+                        isShowMore
+                    />
     
-                    <Pressable
-                        style={styles.optionContainer}
-                        onPress={handleLogout}
-                    >
-                        <View style={{ flexDirection : 'row', alignItems : 'center' }}>
-                            <MaterialIcons name='logout' color={GlobalStyles.primaryColor} size={24}/>
-                            <Text style={styles.text}>Log out</Text>
-                        </View>
-                        <Fontisto name='angle-right' color={GlobalStyles.primaryColor} size={20} />
-                    </Pressable>
+                    <OptionTag 
+                        title="Log out"
+                        icon={<MaterialIcons name='logout' color={GlobalStyles.primaryColor} size={24}/>}
+                        isPrimaryTag
+                        handleOnPress={handleLogout}
+                        isShowMore
+                    />
     
                 </View>
             </ScrollView>
@@ -79,25 +74,6 @@ const styles = StyleSheet.create({
         paddingHorizontal : 20,
         paddingVertical : 12,     
     },
-    optionContainer : {
-       flexDirection : 'row', 
-       paddingHorizontal : 20,
-       paddingVertical : 16,
-       justifyContent : 'space-between',
-       alignItems : 'center',
-       marginTop : 30,
-       borderRadius : 8,
-       backgroundColor : '#fff',
-       shadowOffset : {width : -2 , height : 4},
-       shadowColor : '#000',
-       shadowOpacity : 0.6,
-    },
-    text : {
-        fontSize : 18,
-        marginLeft : 10,
-        fontWeight : '600',
-        color : GlobalStyles.primaryColor,
-    }
 })
 
 export default Profile;

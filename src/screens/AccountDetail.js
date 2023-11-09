@@ -1,6 +1,9 @@
+'use strict'
 import { View, Text, Pressable, SafeAreaView, ScrollView, StyleSheet, Image} from "react-native";
 import { FontAwesome, Fontisto } from "@expo/vector-icons";
 import GlobalStyles from "../untils/GlobalStyles";
+
+import OptionTag from "../components/OptionTag";
 
 function AccountDetial({ route }) {
     const { user } = route.params
@@ -20,34 +23,28 @@ function AccountDetial({ route }) {
                     </Pressable>
                 </View>
                 <View style={styles.userInfoContainer}>
-                        <Pressable
-                            style={styles.userInfo}
-                        >
-                            <Text style={styles.text}>Tên đăng nhập</Text>
-                            <View style={{ flexDirection : 'row', justifyContent : 'center', alignItems : 'center' }}>
-                                <Text style={styles.text}>{user.username}</Text>
-                                <Fontisto name='angle-right' color='#c3c3c3' size={16} />
-                            </View>
-                        </Pressable>
-                        <Pressable
-                            style={styles.userInfo}
-                        >
-                            <Text style={styles.text}>Email</Text>
-                            <View style={{ flexDirection : 'row', justifyContent : 'center', alignItems : 'center' }}>
-                                <Text style={styles.text}>{user.email}</Text>
-                                <Fontisto name='angle-right' color='#c3c3c3' size={16} />
-                            </View>
-                        </Pressable>
-                        <Pressable
-                            style={styles.userInfo}
-                        >
-                            <Text style={styles.text}>Số điện thoại</Text>
-                            <View style={{ flexDirection : 'row', justifyContent : 'center', alignItems : 'center' }}>
-                                <Text style={styles.text}>*******05</Text>
-                                <Fontisto name='angle-right' color='#c3c3c3' size={16} />
-                            </View>
-                        </Pressable>
-
+                        <OptionTag 
+                            title="Tên đăng nhập"
+                            content={user.username}
+                        />
+                        <OptionTag 
+                            title="Email"
+                            content={user.email}
+                            isShowMore
+                        />
+                        <OptionTag 
+                            title="Số điện thoại"
+                            content="********05"
+                            isShowMore
+                        />
+                       <OptionTag 
+                            title="Đổi mật khẩu"
+                            isShowMore
+                       />
+                       <OptionTag 
+                            title="Yêu cầu xóa tài khoản"
+                            isShowMore
+                       />
                 </View>
             </ScrollView>
         </SafeAreaView>
@@ -85,22 +82,6 @@ const styles = StyleSheet.create({
     userInfoContainer : {
         flex : 1,
     },
-    userInfo : {
-        flexDirection : 'row',
-        justifyContent : 'space-between',
-        alignItems : 'center',
-        backgroundColor : '#fff',
-        paddingVertical : 18,
-        paddingHorizontal : 16,
-        borderBottomWidth : 1,
-        borderColor : 'rgba(0,0,0,0.2)'
-    },
-    text : {
-        fontSize : 16,
-        fontWeight : '500',
-        marginRight : 10,
-        color : '#333'
-    }
 })
 
 export default AccountDetial;

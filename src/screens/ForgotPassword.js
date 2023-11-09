@@ -74,7 +74,7 @@ function ForgotPassword({ navigation }) {
                         handleOnFocus={() => handleResetInvalidFields('email')}
                     />
                     {handleCheckInvalid('email') && (
-                        <Text style={styles.invalidMessage}>{invalidFields['email']}</Text>
+                        <Text style={GlobalStyles.invalidMessage}>{invalidFields['email']}</Text>
                     )}
                 </View>
                 <View style={styles.button}>
@@ -98,11 +98,6 @@ function ForgotPassword({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-    invalidMessage: {
-        fontSize: 13,
-        color: 'red',
-        marginTop: 2,
-    },
     subtitle: {
         paddingBottom: 40,
         paddingTop: 20,
@@ -117,7 +112,7 @@ const styles = StyleSheet.create({
     },
     questionsContainer: {
         marginTop: 40,
-        minHeight: 40,
+        minHeight: 80,
         alignItems: 'center',
         justifyContent: 'space-between',
     },

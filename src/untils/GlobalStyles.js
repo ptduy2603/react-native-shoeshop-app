@@ -9,6 +9,11 @@ const GlobalStyles = StyleSheet.create({
         backgroundColor : '#fafafc',
         alignItems: 'center',
         marginTop : StatusBar.currentHeight || 0,
+    },
+    invalidMessage : {
+        fontSize: 13,
+        color : 'red',
+        marginTop: 2,
     }
 })
 

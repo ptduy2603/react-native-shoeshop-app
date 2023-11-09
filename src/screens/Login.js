@@ -111,7 +111,7 @@ function Login({ navigation }) {
                         handleTextChange={handleEmailChange}
                         handleOnFocus={() => handleResetInvalidFields('email')}
                     />
-                    {handleCheckInvalid('email') && <Text style={styles.invalidMessage}>{invalidFields['email']}</Text>}
+                    {handleCheckInvalid('email') && <Text style={GlobalStyles.invalidMessage}>{invalidFields['email']}</Text>}
                 </View>
                 <View style={styles.formGroup}>
                     <FormInputField
@@ -123,7 +123,7 @@ function Login({ navigation }) {
                         handleTextChange={handlePasswordChange}
                         handleOnFocus={() => handleResetInvalidFields('password')}
                     />
-                    {handleCheckInvalid('password') && <Text style={styles.invalidMessage}>{invalidFields['password']}</Text>}
+                    {handleCheckInvalid('password') && <Text style={GlobalStyles.invalidMessage}>{invalidFields['password']}</Text>}
                 </View>
 
                 <View
@@ -169,11 +169,6 @@ const styles = StyleSheet.create({
         textAlign: 'right',
         fontWeight: '500',
         color: GlobalStyles.primaryColor,
-    },
-    invalidMessage: {
-        fontSize: 13,
-        color : 'red',
-        marginTop: 2,
     },
 });
 

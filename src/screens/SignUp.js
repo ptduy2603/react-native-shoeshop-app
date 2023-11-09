@@ -127,7 +127,7 @@ function SignUp({ navigation }) {
                             handleOnFocus={() => handleResetInvalidFields('username')}
                         />
                         {handleCheckInvalid('username') && (
-                            <Text style={styles.invalidMessage}>{invalidFields['username']}</Text>
+                            <Text style={GlobalStyles.invalidMessage}>{invalidFields['username']}</Text>
                         )}
                     </View>
                     <View style={styles.formGroup}>
@@ -141,7 +141,7 @@ function SignUp({ navigation }) {
                             handleOnFocus={() => handleResetInvalidFields('email')}
                         />
                         {handleCheckInvalid('email') && (
-                            <Text style={styles.invalidMessage}>{invalidFields['email']}</Text>
+                            <Text style={GlobalStyles.invalidMessage}>{invalidFields['email']}</Text>
                         )}
                     </View>
                     <View style={styles.formGroup}>
@@ -155,7 +155,7 @@ function SignUp({ navigation }) {
                             handleOnFocus={() => handleResetInvalidFields('password')}
                         />
                         {handleCheckInvalid('password') && (
-                            <Text style={styles.invalidMessage}>{invalidFields['password']}</Text>
+                            <Text style={GlobalStyles.invalidMessage}>{invalidFields['password']}</Text>
                         )}
                     </View>
                     <View style={styles.formGroup}>
@@ -171,7 +171,7 @@ function SignUp({ navigation }) {
                             handleOnFocus={() => handleResetInvalidFields('confirmationPassword')}
                         />
                         {handleCheckInvalid('confirmationPassword') && (
-                            <Text style={styles.invalidMessage}>
+                            <Text style={GlobalStyles.invalidMessage}>
                                 {invalidFields['confirmationPassword']}
                             </Text>
                         )}
@@ -203,11 +203,6 @@ const styles = StyleSheet.create({
     formGroup: {
         marginTop: 26,
         width: '100%',
-    },
-    invalidMessage: {
-        fontSize: 13,
-        color: 'red',
-        marginTop: 2,
     },
 });
 

@@ -1,5 +1,5 @@
 'use strict'
-import { View, Text, StyleSheet, SafeAreaView, Alert } from 'react-native';
+import { View, Text, SafeAreaView, Alert } from 'react-native';
 import { SimpleLineIcons } from '@expo/vector-icons'
 import { useDispatch } from 'react-redux';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -84,7 +84,7 @@ function ResetPassword({ route }) {
                         handleOnFocus={() => handleResetInvalidFields('password')}
                     />
                     {handleCheckInvalid('password') && (
-                        <Text style={styles.invalidMessage}>
+                        <Text style={GlobalStyles.invalidMessage}>
                             {invalidFields['password']}
                         </Text>
                     )}
@@ -100,7 +100,7 @@ function ResetPassword({ route }) {
                         handleOnFocus={() => handleResetInvalidFields('confirmationPassword')}
                     />
                     {handleCheckInvalid('confirmationPassword') && (
-                        <Text style={styles.invalidMessage}>
+                        <Text style={GlobalStyles.invalidMessage}>
                             {invalidFields['confirmationPassword']}
                         </Text>
                     )}
@@ -117,13 +117,5 @@ function ResetPassword({ route }) {
         </SafeAreaView>
     );
 }
-
-const styles = StyleSheet.create({
-    invalidMessage: {
-        fontSize: 13,
-        color: 'red',
-        marginTop: 2,
-    },
-})
 
 export default ResetPassword;
