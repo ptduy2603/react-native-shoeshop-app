@@ -7,6 +7,7 @@ import {
     StyleSheet,
     Pressable,
     View,
+    Dimensions    
 } from 'react-native';
 
 import formatCurrency from '../untils/formatCurrency'
@@ -39,7 +40,7 @@ function ProductCard({ product, handleOnPress, extraStyles={} }) {
 
 const styles = StyleSheet.create({
     cardWrapper : {
-        width: 180, 
+        width: Dimensions.get('window').width*0.465, 
         alignItems: 'center',
         justifyContent: 'space-between',
         borderWidth: 1,

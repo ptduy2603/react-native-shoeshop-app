@@ -1,23 +1,28 @@
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, Pressable} from 'react-native'
 import { useState } from 'react';
 import GlobalStyles from '../untils/GlobalStyles';
+import { useSelector } from 'react-redux'
 
 import CartItem from '../components/CartItem';
 import formatCurrency from '../untils/formatCurrency';
 
 // test with mock data temporaryly
-const mockProduct = {
-    name : 'Giày hoa hồng nam',
-    code : 'PD123',
-    image : 'https://centimet.vn/wp-content/uploads/Giay-Gucci-Ace-Embroidered-Sneaker09856.jpg',
-    price : '1000000',
-    quantity : 1,
-    size : 44,
-    color : 'red'
-}
+const mockProduct = [
+    {
+        id : 1,
+        name : 'Giày hoa hồng nam',
+        code : 'PD123',
+        image : 'https://centimet.vn/wp-content/uploads/Giay-Gucci-Ace-Embroidered-Sneaker09856.jpg',
+        price : '1000000',
+        quantity : 1,
+        size : 44,
+        color : 'red'
+    },
+]
 
 function Cart({ navigation }) {
     const [totalPrice, setTotalPrice] = useState(1000000)
+    const [cartProducts, setCartProducts] = useState(mockProduct) 
     
     const handleUpdateTotalPrice = (value) => {
         setTotalPrice(prevState => prevState + value)
@@ -29,26 +34,18 @@ function Cart({ navigation }) {
                 showsVerticalScrollIndicator={false}
                 style={styles.productList}
             >
-                <CartItem 
-                    product={mockProduct}
-                    handleOnPress={() => navigation.navigate('productDetail', { product : mockProduct })}
-                    handleUpdateTotalPrice={handleUpdateTotalPrice}
-                />
-                <CartItem 
-                    product={mockProduct}
-                    handleOnPress={() => navigation.navigate('productDetail', { product : mockProduct })}
-                    handleUpdateTotalPrice={handleUpdateTotalPrice}
-                />
-                <CartItem 
-                    product={mockProduct}
-                    handleOnPress={() => navigation.navigate('productDetail', { product : mockProduct })}
-                    handleUpdateTotalPrice={handleUpdateTotalPrice}
-                />
-                <CartItem 
-                    product={mockProduct}
-                    handleOnPress={() => navigation.navigate('productDetail', { product : mockProduct })}
-                    handleUpdateTotalPrice={handleUpdateTotalPrice}
-                />
+               {
+                    cartProducts.map((product, index) => {
+                        return (
+                            <CartItem 
+                                key={product.toString()+index}
+                                product={product}
+                                handleOnPress={() => navigation.navigate('productDetail', { product })}    
+                                handleUpdateTotalPrice={handleUpdateTotalPrice}
+                            />
+                        )
+                    })
+               }
             </ScrollView>
             <View style={styles.controllSection}>
                 <View>
@@ -57,7 +54,7 @@ function Cart({ navigation }) {
                 </View>
                 <Pressable 
                     style={styles.checkoutBtn}
-                    onPress={() => console.log('Check out')}
+                    onPress={() => navigation.navigate('Payment', { products : cartProducts, totalPrice })}
                 >
                     <Text style={{ fontSize : 18, fontWeight : '800', color : '#fff' }}>Checkout</Text>
                 </Pressable>

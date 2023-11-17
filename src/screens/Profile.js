@@ -1,6 +1,6 @@
-import { View, Text, StyleSheet, Button, SafeAreaView, Image, Pressable, ScrollView} from 'react-native'
+import { View, Text, StyleSheet, SafeAreaView, Image, ScrollView} from 'react-native'
 import { useSelector, useDispatch } from 'react-redux';
-import { Fontisto, FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import GlobalStyles from '../untils/GlobalStyles';

@@ -1,12 +1,34 @@
 'use strict'
-import { View, Text, Pressable, SafeAreaView, ScrollView, StyleSheet, Image} from "react-native";
-import { FontAwesome, Fontisto } from "@expo/vector-icons";
+import { View, Text, Pressable, SafeAreaView, ScrollView, StyleSheet, Image, Alert} from "react-native";
+import { FontAwesome } from "@expo/vector-icons";
 import GlobalStyles from "../untils/GlobalStyles";
+import { useDispatch } from 'react-redux'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import OptionTag from "../components/OptionTag";
+import { deleteAccount } from '../services'
+import { setCurrentUserAction } from '../redux/actions'
 
-function AccountDetial({ route }) {
+function AccountDetial({ navigation , route }) {
     const { user } = route.params
+    const dispatch = useDispatch()
+
+    const handleDeleteAccount = () => {
+        Alert.alert('Thông báo', 
+                    'ShoeShop rất tiếc khi bạn không muốn tiếp tục sử dụng dịch vụ của chúng tôi, bạn có chắc muốn xóa tài khoản không?', 
+                    [   {text: 'Xóa', onPress: () => { 
+                            deleteAccount(user.token)
+                                .then(response => {
+                                    AsyncStorage.clear()
+                                    dispatch(setCurrentUserAction({}, false))
+                                })
+                                .catch((err) => {
+                                    Alert.alert('Thông báo','Xóa tài khoản không thành công')
+                                })
+                        }}, 
+                        { text: 'Hủy yêu cầu', style : 'cancel' }
+                    ])
+    }
 
     return ( 
         <SafeAreaView style={{ backgroundColor : '#c3c3c3' }}>
@@ -40,10 +62,12 @@ function AccountDetial({ route }) {
                        <OptionTag 
                             title="Đổi mật khẩu"
                             isShowMore
+                            handleOnPress={() => navigation.navigate('AdjustPassword')}
                        />
                        <OptionTag 
                             title="Yêu cầu xóa tài khoản"
                             isShowMore
+                            handleOnPress={handleDeleteAccount}
                        />
                 </View>
             </ScrollView>

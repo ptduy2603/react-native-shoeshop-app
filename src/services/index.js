@@ -2,6 +2,7 @@ import axios from "axios"
 const baseUrl = 'http://10.0.2.2:8000'
 // this folder contain all of fucntions to interact with external api
 
+// AUTH APIs
 // Create new user api
 export const createNewUser = (user) => {
    return axios.post(`${baseUrl}/users/register`, user)    
@@ -32,6 +33,22 @@ export const getUsers = () => {
    return axios.get(`${baseUrl}/users`)
 }
 
+// detete account 
+export const deleteAccount = (token) => {
+   return axios.post(`${baseUrl}/users/delete-account`, { token })
+}
+
+// adjust passowrd
+export const adjustPassword = (token, password, newPassword) => {
+      return axios.post(`${baseUrl}/users/adjust-password`, { token, password, newPassword })
+}
+
+// COUNTRY APIs
+export const fetchCountryApi = (query) => {
+   return axios.get(`${baseUrl}/country?${query}`)
+}
+
+// PRODUCT APIs
 // Add new product into database
 export const addProductToDatabase = (product) => {
    return axios.post(`${baseUrl}/products/addproduct`, { product })
@@ -41,3 +58,4 @@ export const addProductToDatabase = (product) => {
 export const fetchProductsFromServer = () => {
    return axios.get(`${baseUrl}/products`)
 }
+

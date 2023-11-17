@@ -1,7 +1,7 @@
 import { SET_CURRENT_USER } from '../actions'
 
 const initState = {
-    currentUser : {} , // current user includes (userToken, username, email, [avatar],...)
+    currentUser : {} , // current user includes (token, username, email, [avatar],...)
     isAuthentication : false
 }
 

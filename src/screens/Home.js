@@ -109,16 +109,6 @@ function Home({ navigation }) {
                             <>
                                 <Text style={styles.productSectionTitle}>{item.title}</Text>
                                 {handleRenderProduct(item.data)}
-                                {index !== products.length - 1 && (
-                                    <Text
-                                        style={{
-                                            height: 1,
-                                            borderColor: '#c3c3c3',
-                                            borderWidth: 1,
-                                            marginTop: 16,
-                                        }}
-                                    />
-                                )}
                             </>
                         )
                         : null
@@ -132,8 +122,10 @@ function Home({ navigation }) {
 const styles = StyleSheet.create({
     homeContainer: {
         paddingHorizontal: 8,
+        width : '100%',
         paddingTop: 0,
         paddingBottom: 10,
+        alignItems : 'center',
     },
     header: {
         flexDirection: 'row',
@@ -167,8 +159,7 @@ const styles = StyleSheet.create({
     productSectionWrapper: {
         width: '100%',
         rowGap: 12,
-        flexDirection : 'row',
-        flexWrap : 'wrap',
+        justifyContent : 'space-between',
     },
     productSectionTitle: {
         width: '100%',

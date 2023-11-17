@@ -12,6 +12,7 @@ function ProductDetail({ navigation , route }) {
             {/* Just for testing */}
             <Text>This is product detail screen</Text>
             <Text>Product name : {product.name}</Text>
+            <Text>Product ID : {product._id}</Text>
             <Button 
                 title="Add to cart"
                 onPress={() => {
