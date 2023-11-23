@@ -59,3 +59,14 @@ export const fetchProductsFromServer = () => {
    return axios.get(`${baseUrl}/products`)
 }
 
+// CART APIs
+// Add product to cart 
+export const addProductToCart = (token, product) => {
+   return axios.post(`${baseUrl}/cart/add-product`, { token, product })
+}
+
+// Fetch cart 
+export const fetchCart = (token) => {
+   return axios.get(`${baseUrl}/cart/${token}`)
+}
+

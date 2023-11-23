@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 function CustomButton({ title, buttonColor , handleOnPress, disabled=false, extraStyles={}}) {
     return (
         <Pressable
-            style={[styles.button, buttonColor ? {backgroundColor: buttonColor} : {}, extraStyles]}
+            style={[styles.button, buttonColor ? {backgroundColor: buttonColor} : {}, extraStyles, disabled && { opacity: 0.5 }]}
             disabled={disabled}
             onPress={handleOnPress}
         >

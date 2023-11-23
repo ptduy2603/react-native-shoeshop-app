@@ -6,7 +6,6 @@ import { AntDesign } from '@expo/vector-icons';
 import { useDispatch } from 'react-redux'
 
 import formatCurrency from '../untils/formatCurrency';
-import { removeProductFromCartAction } from '../redux/actions'
 import { useState } from 'react';
 import GlobalStyles from '../untils/GlobalStyles';
 
@@ -17,23 +16,23 @@ function CartItem({ product, handleOnPress, handleUpdateTotalPrice }) {
     const dispatch = useDispatch()
 
     const handleChangeQuantity = (newQuantity) => {
-        handleUpdateTotalPrice((newQuantity - quantity) * product.price);
+        handleUpdateTotalPrice((newQuantity - quantity) * product.productId.price);
         setQuantity(newQuantity);
     };
 
     return (
         <Pressable style={styles.cartItemContainer} onPress={handleOnPress}>
-            <Image style={styles.productImage} source={{ uri: product.image }} />
+            <Image style={styles.productImage} source={{ uri: product.color.image }} />
             <View style={styles.productInfo}>
                 <Text style={styles.productName} numberOfLines={2} ellipsizeMode="tail">
-                    {product.name}
+                    {product.productId.name}
                 </Text>
                 <View style={{ marginTop: 10 }}>
                     <Text style={styles.text}>Product code: {product.code}</Text>
-                    <Text style={styles.text}>Color: {product.color}</Text>
+                    <Text style={styles.text}>Color: {product.color.name}</Text>
                     <Text style={styles.text}>Size: {product.size}</Text>
                 </View>
-                <Text style={styles.productPrice}>{formatCurrency(product.price)} VNĐ</Text>
+                <Text style={styles.productPrice}>{formatCurrency(product.productId.price)} VNĐ</Text>
                 <View
                     style={{
                         marginTop: 10,
@@ -60,7 +59,6 @@ function CartItem({ product, handleOnPress, handleUpdateTotalPrice }) {
                     <TouchableOpacity 
                         style={styles.deleteBtn} 
                         activeOpacity={0.5}
-                        onPress={() =>  dispatch(removeProductFromCartAction(product._id))}
                     >
                         <AntDesign name="delete" size={26} color="#000" />
                     </TouchableOpacity>

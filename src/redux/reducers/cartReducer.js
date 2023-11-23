@@ -1,4 +1,4 @@
-import { ADD_PRODUCT_TO_CART, REMOVE_FROM_CART, INCREASE_PRODUCT_QUANTITY, DESCREASE_PRODUCT_QUANTITY } from "../actions"
+import { ADD_PRODUCT_TO_CART, REMOVE_FROM_CART, INCREASE_PRODUCT_QUANTITY, DESCREASE_PRODUCT_QUANTITY, SET_CART_DATA } from "../actions"
 
 const initState = {
     cart : [] 
@@ -7,6 +7,11 @@ const initState = {
 const cartReducer = (state=initState, action) => {
     switch(action.type)
     {
+        case SET_CART_DATA : 
+            return {
+                ...state,
+                cart : action.payload
+            }
         case ADD_PRODUCT_TO_CART :
             return {
                 ...state,

@@ -7,6 +7,7 @@ function FormContainer({ children }) {
             pagingEnabled
             showsHorizontalScrollIndicator={false}
             showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ justifyContent : 'center' }}
         >
             <KeyboardAvoidingView 
                 enabled                

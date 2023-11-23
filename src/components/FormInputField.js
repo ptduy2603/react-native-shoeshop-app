@@ -3,11 +3,11 @@ import { Ionicons } from "@expo/vector-icons";
 import PropTypes from 'prop-types';
 import { useState } from "react";
 
-function FormInputField({ placeholder, icon , value, handleTextChange, isSecure=false, autoFocus=false, type='text', isInvalid=false, handleOnFocus, maxLength}) {
+function FormInputField({ placeholder, icon , value, handleTextChange, isSecure=false, autoFocus=false, type='text', isInvalid=false, handleOnFocus, maxLength, extraStyles}) {
     const [hideData, setHideData] = useState(false || isSecure)
 
     return ( 
-        <View style={[styles.inputContainer, isInvalid && { borderColor: 'red' } ]}>
+        <View style={[styles.inputContainer,extraStyles, isInvalid && { borderColor: 'red' } ]}>
             {icon}
             <TextInput 
                 style={styles.inputText}

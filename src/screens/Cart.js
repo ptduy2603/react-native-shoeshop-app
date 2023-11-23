@@ -1,32 +1,27 @@
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, Pressable} from 'react-native'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import GlobalStyles from '../untils/GlobalStyles';
 import { useSelector } from 'react-redux'
 
 import CartItem from '../components/CartItem';
 import formatCurrency from '../untils/formatCurrency';
 
-// test with mock data temporaryly
-const mockProduct = [
-    {
-        id : 1,
-        name : 'Giày hoa hồng nam',
-        code : 'PD123',
-        image : 'https://centimet.vn/wp-content/uploads/Giay-Gucci-Ace-Embroidered-Sneaker09856.jpg',
-        price : '1000000',
-        quantity : 1,
-        size : 44,
-        color : 'red'
-    },
-]
-
 function Cart({ navigation }) {
-    const [totalPrice, setTotalPrice] = useState(1000000)
-    const [cartProducts, setCartProducts] = useState(mockProduct) 
+    const [totalPrice, setTotalPrice] = useState()
+    const cartProducts = useSelector(state => state.cartReducer.cart)
+
+    console.log(cartProducts)
     
     const handleUpdateTotalPrice = (value) => {
         setTotalPrice(prevState => prevState + value)
     }
+
+    useEffect(() => {
+        const total = cartProducts.reduce((sum, currItem) => {
+            return sum + Number(currItem.productId.price)*Number(currItem.quantity)
+        }, 0)
+        setTotalPrice(total)
+    }, [cartProducts])
 
     return ( 
         <SafeAreaView style={styles.container}>
@@ -40,7 +35,7 @@ function Cart({ navigation }) {
                             <CartItem 
                                 key={product.toString()+index}
                                 product={product}
-                                handleOnPress={() => navigation.navigate('productDetail', { product })}    
+                                // handleOnPress={() => navigation.navigate('productDetail', { product })}    
                                 handleUpdateTotalPrice={handleUpdateTotalPrice}
                             />
                         )
@@ -54,9 +49,9 @@ function Cart({ navigation }) {
                 </View>
                 <Pressable 
                     style={styles.checkoutBtn}
-                    onPress={() => navigation.navigate('Payment', { products : cartProducts, totalPrice })}
+                    onPress={() => navigation.navigate('Payment', { totalPrice })}
                 >
-                    <Text style={{ fontSize : 18, fontWeight : '800', color : '#fff' }}>Checkout</Text>
+                    <Text style={{ fontSize : 18, fontWeight : '800', color : '#fff' }}>Thanh toán</Text>
                 </Pressable>
             </View>
         </SafeAreaView>

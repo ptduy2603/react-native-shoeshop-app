@@ -1,5 +1,5 @@
 'use strict';
-import { ScrollView, Image, View, Text, SafeAreaView, StyleSheet, FlatList } from 'react-native';
+import { ScrollView, Image, View, Text, SafeAreaView, StyleSheet, FlatList, Pressable } from 'react-native';
 import { useSelector } from 'react-redux';
 
 import GlobalStyles from '../untils/GlobalStyles';
@@ -23,11 +23,15 @@ function Home({ navigation }) {
             <>
                 {/* greeting user */}
                 <View style={styles.header}>
-                    <Image
-                        style={styles.userImage}
-                        source={currentUser.avatar ? { uri : currentUser.avatar } : require('../../assets/images/default_avatar.png')}
-                    />
-
+                   <Pressable
+                        onPress={() => navigation.navigate('profile')}
+                   >
+                        <Image
+                            style={styles.userImage}
+                            source={currentUser.avatar ? { uri : currentUser.avatar } : require('../../assets/images/default_avatar.png')}
+                        />
+    
+                   </Pressable>
                     <View style={styles.greetingUser}>
                         <Text style={styles.hiMember}>Hi, {currentUser.username}!</Text>
                         <Text style={styles.subTitle}>Let choose your suitable shoes</Text>

@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useDispatch } from 'react-redux';
 
 import { validEmailRegex } from '../constants'
-import { loginApp , fetchProductsFromServer } from '../services';
+import { loginApp , fetchProductsFromServer, fetchCart } from '../services';
 import useValidate from '../hooks/useValidate';
 import GlobalStyles from '../untils/GlobalStyles';
 import FormContainer from '../components/FormContainer';
@@ -17,7 +17,7 @@ import NavigateQuestion from '../components/NavigateQuestion';
 import Apploading from '../components/AppLoading'
 import SocialsLogin from '../components/SocialsLogin';
 import { categories } from '../data';
-import { setCurrentUserAction, fetchProductsAction } from '../redux/actions'
+import { setCurrentUserAction, fetchProductsAction, setCartAction } from '../redux/actions'
 
 function Login({ navigation }) {
     // states
@@ -53,6 +53,9 @@ function Login({ navigation }) {
                 // if user logined then navigate to main bottom tab
                 if(currentUser) {
                     dispatch(setCurrentUserAction(currentUser, true))
+                    fetchCart(currentUser.token)
+                        .then(res => dispatch(setCartAction(res.data.products)))
+                        .catch(err => console.log(err))
                 }
             }
             catch(error)
@@ -101,6 +104,9 @@ function Login({ navigation }) {
                         
                         // navigate to MainBottom tabs by set authState in redux store
                         dispatch(setCurrentUserAction(response.data.currentUser, true))
+                        fetchCart(response.data.currentUser.token)
+                            .then(res => dispatch(setCartAction(res.data.products)))
+                            .catch(err => console.log(err))
                     })
                     .catch(error => {        
                         console.log(error)                
