@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useDispatch } from 'react-redux';
 
 import { validEmailRegex } from '../constants'
-import { loginApp , fetchProductsFromServer, fetchCart } from '../services';
+import { loginApp, fetchCart } from '../services';
 import useValidate from '../hooks/useValidate';
 import GlobalStyles from '../untils/GlobalStyles';
 import FormContainer from '../components/FormContainer';
@@ -16,8 +16,7 @@ import CustomButton from '../components/CustomButton';
 import NavigateQuestion from '../components/NavigateQuestion';
 import Apploading from '../components/AppLoading'
 import SocialsLogin from '../components/SocialsLogin';
-import { categories } from '../data';
-import { setCurrentUserAction, fetchProductsAction, setCartAction } from '../redux/actions'
+import { setCurrentUserAction, setCartAction } from '../redux/actions'
 
 function Login({ navigation }) {
     // states
@@ -26,23 +25,6 @@ function Login({ navigation }) {
     const [showLoading, setShowLoading] = useState(false)
     const { invalidFields, handleSetInvalidFields, handleResetInvalidFields, handleCheckInvalid } = useValidate()
     const dispatch = useDispatch()
-
-    // fetch all product from server and add to redux
-    useEffect(() => {
-        fetchProductsFromServer()
-            .then(response => {
-                let products = response.data.products
-                products = products.map(productSection => {
-                    categories.forEach(category => {
-                        if(category.type === productSection.title)
-                            productSection.title = category.name
-                    })
-                    return productSection
-                })
-                dispatch(fetchProductsAction(products))
-            })
-            .catch(err => console.log('Fetch product error', err))
-    }, [dispatch, fetchProductsFromServer, fetchProductsAction])
 
     // if user already logined then check userToken and navigate straight to BottomTabs
     useEffect(() => {
@@ -64,6 +46,7 @@ function Login({ navigation }) {
             }
         }
         checkLoginStatus()
+        console.log('Check user status')
     }, [])
 
     // handler functions

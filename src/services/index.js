@@ -70,3 +70,9 @@ export const fetchCart = (token) => {
    return axios.get(`${baseUrl}/cart/${token}`)
 }
 
+//Categories APIs
+// get all of categories from database
+export const fetchCategories = () => {
+   return axios.get(`${baseUrl}/categories`)
+}
+

@@ -51,7 +51,7 @@ function Cart({ navigation }) {
                     style={styles.checkoutBtn}
                     onPress={() => navigation.navigate('Payment', { totalPrice })}
                 >
-                    <Text style={{ fontSize : 18, fontWeight : '800', color : '#fff' }}>Thanh toán</Text>
+                    <Text style={{ fontSize : 18, fontWeight : '800', color : '#fff' }}>Check out</Text>
                 </Pressable>
             </View>
         </SafeAreaView>

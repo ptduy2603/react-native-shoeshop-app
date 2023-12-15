@@ -60,3 +60,4 @@ function ProductDetail({ navigation , route }) {
 }
 
 export default ProductDetail;
+

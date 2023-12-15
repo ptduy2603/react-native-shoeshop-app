@@ -67,7 +67,10 @@ function BottomTabs () {
                     tabBarIcon: ({ focused }) => {
                         return <Ionicons name={focused ? 'cart-sharp' : 'cart-outline'} size={28} color={focused ? GlobalStyles.primaryColor : '#000'} />
                     },
-                    tabBarBadge : cartItemQuantity
+                    tabBarBadge : cartItemQuantity,
+                    tabBarBadgeStyle : {
+                        display : cartItemQuantity ? 'flex' : 'none'
+                    }
                 }}
             />
             <Tab.Screen 

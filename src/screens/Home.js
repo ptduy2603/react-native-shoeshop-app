@@ -1,22 +1,49 @@
 'use strict';
-import { ScrollView, Image, View, Text, SafeAreaView, StyleSheet, FlatList, Pressable } from 'react-native';
+import { ScrollView, Image, View, Text, SafeAreaView, StyleSheet, FlatList, Pressable, Dimensions } from 'react-native';
 import { useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
+import Carousel from 'react-native-reanimated-carousel';
 
 import GlobalStyles from '../untils/GlobalStyles';
 import SearchItem from '../components/SearchItem';
 import ProductCard from '../components/ProductCard';
 import CategoryButton from '../components/CategoryButton';
-
-import { categories } from '../data';
-import { useState } from 'react';
+import AppLoading from '../components/AppLoading'
+import { fetchProductsFromServer, fetchCategories } from '../services'
+import { sliderImages } from '../data'
 
 function Home({ navigation }) {
-    const [currentCategory, setCurrentCategory] = useState('')
+    const [products, setProducts] = useState([])
+    const [categories, setCategories] = useState([])
+    const [isLoading, setIsLoading] = useState(true)
+    const [currentCategory, setCurrentCategory] = useState('all')
     // get current user
     const currentUser = useSelector((state) => state.authReducer.currentUser);
-    // get all products from redux store
-    const products = useSelector(state => state.productReducer.products)
 
+    useEffect(() => {
+        fetchCategories()
+            .then(response => {
+                const categories = response.data.categories
+                fetchProductsFromServer()
+                    .then(response => {
+                        let products = response.data.products
+                        products.forEach(productSection => {
+                            categories.forEach(category => {
+                                if(category.type === productSection.title)
+                                    productSection.title = category.title
+                            })
+                        })
+                        setProducts(products)
+                        setCategories(categories)
+                        setIsLoading(false)
+                    })
+                    .catch(err => console.error(err))
+                console.log('Fetch products and categories')
+            })
+            .catch(error => console.error(error))
+    }, [])
+
+    // handler functions
     const handleRenderHeader = () => {
         // components in this function will be render before FlatList data
         return (
@@ -47,21 +74,34 @@ function Home({ navigation }) {
                     horizontal
                     showsHorizontalScrollIndicator={false}
                 >
+                    <CategoryButton 
+                        category={{ title : 'All' }}
+                        handleOnPress={() => setCurrentCategory('all')}
+                        isActive={currentCategory === 'all'}
+                    />
                     {categories.map((category) => {
                         return (
                             <CategoryButton
                                 category={category}
                                 key={category.id}
                                 isActive={category.type === currentCategory}
-                                handleOnPress={() => {
-                                    if(category.type !== currentCategory)
-                                        setCurrentCategory(category.type)
-                                    else setCurrentCategory('')
-                                }}
+                                handleOnPress={() => setCurrentCategory(category.type)}
                             />
                         );
                     })}
                 </ScrollView>
+
+                <Carousel 
+                    data={sliderImages}
+                    height={200}
+                    loop
+                    width={Dimensions.get('window').width}
+                    autoPlay
+                    scrollAnimationDuration={1200}
+                    renderItem={({ item }) => (
+                        <Image style={styles.sliderImage} source={item} />
+                    )}
+                />
             </>
         );
     };
@@ -85,8 +125,8 @@ function Home({ navigation }) {
                         <ProductCard
                             product={item}
                             extraStyles={{ 
-                                marginLeft : index%2 === 0 ? 0 : 6,
-                                marginRight : index%2 === 0 ? 6 : 0,
+                                marginLeft : index%2 === 0 ? 0 : 4,
+                                marginRight : index%2 === 0 ? 4 : 0,
                             }}
                             handleOnPress={() => navigation.navigate('productDetail', { product : item })}
                         />
@@ -98,27 +138,36 @@ function Home({ navigation }) {
 
     return (
         <SafeAreaView style={[GlobalStyles.container, styles.homeContainer]}>
-            {/* use nested FlatList to render products */}
-            <FlatList
-                data={products}
-                style={styles.productsContainer}
-                keyExtractor={(item, index) => item + index}
-                showsVerticalScrollIndicator={false}
-                ListHeaderComponent={handleRenderHeader}
-                ListFooterComponent={handleRenderFooter}
-                renderItem={({ item, index }) => {
-                    return (
-                        item.data[0].genre === currentCategory || currentCategory === '' ?
-                        (
-                            <>
-                                <Text style={styles.productSectionTitle}>{item.title}</Text>
-                                {handleRenderProduct(item.data)}
-                            </>
-                        )
-                        : null
-                    );
-                }}
-            />            
+            {
+                isLoading ? (
+                    <AppLoading />
+                ) : 
+                (
+                    <>
+                        {/* use nested FlatList to render products */}
+                        <FlatList
+                            data={products}
+                            style={styles.productsContainer}
+                            keyExtractor={(item, index) => item.toString() + index}
+                            showsVerticalScrollIndicator={false}
+                            ListHeaderComponent={handleRenderHeader}
+                            ListFooterComponent={handleRenderFooter}
+                            renderItem={({ item }) => {
+                                return (
+                                    item.data[0].genre === currentCategory || currentCategory === 'all' ?
+                                    (
+                                        <>
+                                            <Text style={styles.productSectionTitle}>{item.title}</Text>
+                                            {handleRenderProduct(item.data)}
+                                        </>
+                                    )
+                                    : null
+                                );
+                            }}
+                        />            
+                    </>
+                )
+            }
         </SafeAreaView>
     );
 }
@@ -158,21 +207,28 @@ const styles = StyleSheet.create({
         marginBottom: 10,
     },
     productsContainer: {
-        width: '100%',
+        width: Dimensions.get('window').width,
+        paddingHorizontal : 6,
     },
     productSectionWrapper: {
         width: '100%',
-        rowGap: 12,
-        justifyContent : 'space-between',
+        gap : 10,
+        rowGap: 10,
     },
     productSectionTitle: {
         width: '100%',
         fontWeight: '600',
-        marginTop: 26,
+        marginTop: 16,
         fontSize: 20,
         paddingBottom: 4,
         marginBottom: 10,
     },
+    sliderImage : {
+        width : '100%',
+        height : '100%',
+        objectFit : 'cover',
+        borderRadius : 6,
+    }
 });
 
 export default Home;
