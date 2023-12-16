@@ -3,7 +3,7 @@ const baseUrl = 'http://10.0.2.2:8000'
 // this folder contain all of fucntions to interact with external api
 
 // AUTH APIs
-// Create new user api
+// Create new user api (Sign up)
 export const createNewUser = (user) => {
    return axios.post(`${baseUrl}/users/register`, user)    
 }
@@ -11,6 +11,11 @@ export const createNewUser = (user) => {
 // Login with email and password
 export const loginApp = (user) => {
    return axios.post(`${baseUrl}/users/login`, user)
+}
+
+// Get sigle user information
+export const fetchUser = (token) => {
+   return axios.get(`${baseUrl}/users/${token}`)
 }
 
 // Request to reset password using email api

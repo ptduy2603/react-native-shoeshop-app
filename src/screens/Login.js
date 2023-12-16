@@ -30,14 +30,14 @@ function Login({ navigation }) {
     useEffect(() => {
         const checkLoginStatus = async () => {
             try {
-                const result = await AsyncStorage.getItem('currentUser')
-                const currentUser = JSON.parse(result)
+                const result = await AsyncStorage.getItem('userToken')
+                const userToken = JSON.parse(result)
                 // if user logined then navigate to main bottom tab
-                if(currentUser) {
-                    dispatch(setCurrentUserAction(currentUser, true))
-                    fetchCart(currentUser.token)
+                if(userToken) {
+                    dispatch(setCurrentUserAction(userToken))
+                    fetchCart(userToken)
                         .then(res => dispatch(setCartAction(res.data.products)))
-                        .catch(err => console.log(err))
+                        .catch(err => console.error(err))
                 }
             }
             catch(error)
@@ -83,11 +83,11 @@ function Login({ navigation }) {
                 loginApp(user)
                     .then(response => {
                         // save token to asyncStorage so user don't need to login the next time
-                        AsyncStorage.setItem('currentUser', JSON.stringify(response.data.currentUser))
+                        AsyncStorage.setItem('userToken', JSON.stringify(response.data.token))
                         
                         // navigate to MainBottom tabs by set authState in redux store
-                        dispatch(setCurrentUserAction(response.data.currentUser, true))
-                        fetchCart(response.data.currentUser.token)
+                        dispatch(setCurrentUserAction(response.data.token))
+                        fetchCart(response.data.token)
                             .then(res => dispatch(setCartAction(res.data.products)))
                             .catch(err => console.log(err))
                     })

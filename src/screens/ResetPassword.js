@@ -48,14 +48,9 @@ function ResetPassword({ route }) {
                 setShowLoading(false)
                 resetPassword(userId,token, password)
                     .then(response => {
-                        const currentUser = {
-                            token : response.data.token,
-                            username: response.data.username,
-                            email : response.data.email,
-                        }
-                        AsyncStorage.setItem('currentUser', JSON.stringify(currentUser))
+                        AsyncStorage.setItem('userToken', JSON.stringify(response.data.token))
                         Alert.alert('Message', 'Reset your password successfully!', [{ text: 'OK', onPress: () => {
-                            dispatch(setCurrentUserAction(currentUser, true))
+                            dispatch(setCurrentUserAction(response.data.token))
                         } }])
                     })
                     .catch(error => {

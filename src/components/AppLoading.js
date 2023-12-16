@@ -3,9 +3,9 @@ import { View, StyleSheet } from 'react-native'
 import LottieView from 'lottie-react-native'
 
 // loading effect in this app
-function AppLoading() {
+function AppLoading({ isWhiteBackground=false }) {
     return ( 
-        <View style={[StyleSheet.absoluteFillObject, styles.container]}>
+        <View style={[StyleSheet.absoluteFillObject, styles.container, isWhiteBackground && { backgroundColor : '#fff' }]}>
             <LottieView 
                 style={{width:100, height: 100}}
                 source={require('../../assets/animations/loading.json')}

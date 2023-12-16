@@ -97,8 +97,7 @@ function SignUp({ navigation }) {
                 setShowLoading(false)
                 createNewUser(user)
                     .then((response) => {
-                        console.log(response);
-                        dispatch({ type : 'RESET_VALUE_ALL' })
+                        console.log(response)
                         Alert.alert("Message", "Sign up successfully!", [{ text : 'OK', onPress: () => navigation.navigate('Login') }])
                     })
                     .catch((error) => {

@@ -1,17 +1,15 @@
-import { SET_CURRENT_USER } from '../actions'
+import { SET_USER_TOKEN } from '../actions'
 
 const initState = {
-    currentUser : {} , // current user includes (token, username, email, [avatar],...)
-    isAuthentication : false
+    userToken : ''
 }
 
 const authReducer = (state=initState, action) => {
     switch(action.type) {
-        case SET_CURRENT_USER : {
+        case SET_USER_TOKEN : {
             return {
                 ...state,
-                currentUser : action.payload.user,
-                isAuthentication : action.payload.isAuthentication
+                userToken : action.payload,
             }
         }           
         default: 

@@ -1,16 +1,18 @@
 import { Text, Button, SafeAreaView, Alert } from "react-native";
 import { useDispatch, useSelector } from 'react-redux'
-import { useState } from "react";
+import { useState, useLayoutEffect } from "react";
 
 import { setCartAction } from '../redux/actions'
-import { addProductToCart, fetchCart } from '../services'
+import { addProductToCart } from '../services'
 import GlobalStyles from "../untils/GlobalStyles";
 
 function ProductDetail({ navigation , route }) {
     const { product } = route.params
-    const token = useSelector(state => state.authReducer.currentUser.token)
+    const token = useSelector(state => state.authReducer.userToken)
+    const cart = useSelector(state => state.cartReducer.cart)
     const [size, setSize] = useState(40)
     const [color , setColor] = useState({ name : 'red', image : 'test' })    // cho user lựa chọn và set lại
+    const dispatch = useDispatch()
     
     // product nhận từ home { _id , name, price, colors, sizes,  des, genre, ....} giống dưới database
     // công việc : 
@@ -19,32 +21,35 @@ function ProductDetail({ navigation , route }) {
     // ==> Đầu ra cần 1 object product { _id, size (Number), color (Object { type , image }) }
     // nhấn yêu thích để push thông tin product vào Favourites
     // t đã viết sẵn chức năng đẩy product vào giỏ và store redux
-    const dispatch = useDispatch()
     const handleAddProductToCart = () => {
         // kiểm tra điều kiện các trường input và tổng hợp, t chỉ mới test if...else
-        const selectedProduct = {
-            _id : product._id,
-            size,
-            color,
+        const existsProduct = cart.find(cartProduct => cartProduct.productId.toString() === product._id.toString() && cartProduct.size === size && cartProduct.color.name === color.name)
+        if(existsProduct)
+        {
+            Alert.alert('Thông báo', 'Sản phẩm đã tồn tại trong giỏ hàng')
+            return
         }
+
+        const selectedProduct = {
+            productId : product._id,
+            quantity : 1,
+            size,
+            color
+        }
+
+        const newCart = [...cart, selectedProduct]
+        dispatch(setCartAction(newCart))
         addProductToCart(token, selectedProduct)
-            .then(response => {
-                fetchCart(token)
-                    .then(res => {
-                        dispatch(setCartAction(res.data.products))
-                        Alert.alert("Message", "Sản phẩm đã được thêm vào giỏ hàng")
-                    })
-                    .catch(err => {
-                       console.log(err)
-                    })
-            })
-            .catch(err => {
-                if(err.response.status === 400)
-                    Alert.alert("Message", "Sản phẩm đã tồn tại trong giỏ hàng !")
-                console.log(err)
-            })
+            .then(res => Alert.alert('Thông báo', 'Sản phẩm đã được thêm vào giỏ hàng'))
+            .catch(err => console.error(err))
     }
 
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerTitle : product.name
+        })
+    }, [navigation, product])
+    
     return ( 
         <SafeAreaView style={[GlobalStyles.container, { marginTop : 0 }]}>
             {/* Just for testing */}

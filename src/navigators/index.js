@@ -6,11 +6,11 @@ import Main from "./Main"
 
 function Navigators() {
     // check if isAuthentication then render MainBottom , else render AuthStack
-    const isAuthentication = useSelector(state =>  state.authReducer.isAuthentication)
+    const token = useSelector(state =>  state.authReducer.userToken)
     
     return (
         <NavigationContainer>
-            {isAuthentication ? <Main /> : <AuthStack /> }
+            {Boolean(token) ? <Main /> : <AuthStack /> }
         </NavigationContainer>
     )
 }

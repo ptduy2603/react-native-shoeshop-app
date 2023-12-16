@@ -4,47 +4,69 @@ import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import GlobalStyles from '../untils/GlobalStyles';
+import AppLoading from '../components/AppLoading';
 import OptionTag from '../components/OptionTag';
-import { setCurrentUserAction } from '../redux/actions'
+import { fetchUser } from '../services'
+import { useEffect, useState } from 'react';
 
 function Profile({ navigation }) {
-    const currentUser = useSelector(state => state.authReducer.currentUser)
+    const token = useSelector(state => state.authReducer.userToken)
+    const [user, setUser] = useState({})
+    const [isLoading, setIsLoading] = useState(true)
     const dispatch = useDispatch()
+
+    useEffect(() => {
+        fetchUser(token)
+            .then(response => {
+                setUser(response.data.user)
+                setIsLoading(false)
+            })
+            .catch(error => console.error(error))
+        console.log('Fetch user information')
+    }, [])
 
     const handleLogout = () => {
         AsyncStorage.clear()
-        dispatch(setCurrentUserAction({}, false))
+        dispatch(setCurrentUserAction(''))
     }
 
     return ( 
         <SafeAreaView style={[GlobalStyles.container, { paddingVertical : 0, paddingHorizontal : 0, backgroundColor : 'ligthgrey'}]}>
-            <ScrollView showsVerticalScrollIndicator={false} style={{ width : '100%' }}>
-                <View style={styles.header}>
-                    <Image 
-                        style={styles.userImage}
-                        source={currentUser.avatar ? { uri : currentUser.avatar } : require('../../assets/images/default_avatar.png')}
-                    />
-                    <Text style={styles.username}>{currentUser.username}</Text>
-                </View>
-                <View style={styles.container}>
-                    <OptionTag 
-                        title="My account"
-                        icon={<FontAwesome name='user' color={GlobalStyles.primaryColor} size={24}/>}
-                        isPrimaryTag
-                        handleOnPress={() => navigation.navigate('AccountDetail', { user : currentUser })}
-                        isShowMore
-                    />
-    
-                    <OptionTag 
-                        title="Log out"
-                        icon={<MaterialIcons name='logout' color={GlobalStyles.primaryColor} size={24}/>}
-                        isPrimaryTag
-                        handleOnPress={handleLogout}
-                        isShowMore
-                    />
-    
-                </View>
-            </ScrollView>
+            {
+                isLoading ? (
+                    <AppLoading isWhiteBackground />
+                ) : (
+                    <>
+                            <ScrollView showsVerticalScrollIndicator={false} style={{ width : '100%' }}>
+                                <View style={styles.header}>
+                                    <Image 
+                                        style={styles.userImage}
+                                        source={user?.avatar ? { uri : user?.avatar } : require('../../assets/images/default_avatar.png')}
+                                    />
+                                    <Text style={styles.username}>{user?.username}</Text>
+                                </View>
+                                <View style={styles.container}>
+                                    <OptionTag 
+                                        title="My account"
+                                        icon={<FontAwesome name='user' color={GlobalStyles.primaryColor} size={24}/>}
+                                        isPrimaryTag
+                                        handleOnPress={() => navigation.navigate('AccountDetail', { user })}
+                                        isShowMore
+                                    />
+                    
+                                    <OptionTag 
+                                        title="Log out"
+                                        icon={<MaterialIcons name='logout' color={GlobalStyles.primaryColor} size={24}/>}
+                                        isPrimaryTag
+                                        handleOnPress={handleLogout}
+                                        isShowMore
+                                    />
+                    
+                                </View>
+                        </ScrollView>
+                    </>
+                )
+            }
         </SafeAreaView>
      )
 }

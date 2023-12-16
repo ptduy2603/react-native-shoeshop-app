@@ -9,16 +9,16 @@ import SearchItem from '../components/SearchItem';
 import ProductCard from '../components/ProductCard';
 import CategoryButton from '../components/CategoryButton';
 import AppLoading from '../components/AppLoading'
-import { fetchProductsFromServer, fetchCategories } from '../services'
+import { fetchProductsFromServer, fetchCategories, fetchUser} from '../services'
 import { sliderImages } from '../data'
 
 function Home({ navigation }) {
     const [products, setProducts] = useState([])
     const [categories, setCategories] = useState([])
+    const [user, setUser] = useState({})
     const [isLoading, setIsLoading] = useState(true)
     const [currentCategory, setCurrentCategory] = useState('all')
-    // get current user
-    const currentUser = useSelector((state) => state.authReducer.currentUser);
+    const token = useSelector((state) => state.authReducer.userToken);
 
     useEffect(() => {
         fetchCategories()
@@ -43,6 +43,15 @@ function Home({ navigation }) {
             .catch(error => console.error(error))
     }, [])
 
+    useEffect(() => {
+        fetchUser(token)
+            .then(response => {
+                setUser(response.data.user)
+            })
+            .catch(error => console.error(error))
+        console.log('Fetch user information')
+    }, [])
+
     // handler functions
     const handleRenderHeader = () => {
         // components in this function will be render before FlatList data
@@ -55,12 +64,12 @@ function Home({ navigation }) {
                    >
                         <Image
                             style={styles.userImage}
-                            source={currentUser.avatar ? { uri : currentUser.avatar } : require('../../assets/images/default_avatar.png')}
+                            source={user.avatar ? { uri : user.avatar } : require('../../assets/images/default_avatar.png')}
                         />
     
                    </Pressable>
                     <View style={styles.greetingUser}>
-                        <Text style={styles.hiMember}>Hi, {currentUser.username}!</Text>
+                        <Text style={styles.hiMember}>Hi, {user.username}!</Text>
                         <Text style={styles.subTitle}>Let choose your suitable shoes</Text>
                     </View>
                 </View>
@@ -140,7 +149,7 @@ function Home({ navigation }) {
         <SafeAreaView style={[GlobalStyles.container, styles.homeContainer]}>
             {
                 isLoading ? (
-                    <AppLoading />
+                    <AppLoading isWhiteBackground />
                 ) : 
                 (
                     <>

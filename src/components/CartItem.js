@@ -3,21 +3,31 @@ import { Pressable, Text, View, StyleSheet, Image, TouchableOpacity } from 'reac
 import PropTypes from 'prop-types';
 import NumericInput from 'react-native-numeric-input';
 import { AntDesign } from '@expo/vector-icons';
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import formatCurrency from '../untils/formatCurrency';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import GlobalStyles from '../untils/GlobalStyles';
 
-// product { _id, name, image, price, quantity, size, color, code} from ProductDetail
+// product { productId, name, image, price, quantity, size, color { name, image }, code} from ProductDetail
 
-function CartItem({ product, handleOnPress, handleUpdateTotalPrice }) {
+function CartItem({ product, handleOnPress, setCartProducts, setCurrentProductId }) {
     const [quantity, setQuantity] = useState(product.quantity);
+    const cart = useSelector(state => state.cartReducer.cart)
+    const token = useSelector(state => state.authReducer.userToken)
     const dispatch = useDispatch()
 
     const handleChangeQuantity = (newQuantity) => {
-        handleUpdateTotalPrice((newQuantity - quantity) * product.productId.price);
-        setQuantity(newQuantity);
+       if(newQuantity > quantity) {
+
+       }
+       else {
+            if(quantity === 1)  
+            {
+                setCurrentProductId(product.productId)
+                return
+            }
+       }
     };
 
     return (
@@ -25,14 +35,14 @@ function CartItem({ product, handleOnPress, handleUpdateTotalPrice }) {
             <Image style={styles.productImage} source={{ uri: product.color.image }} />
             <View style={styles.productInfo}>
                 <Text style={styles.productName} numberOfLines={2} ellipsizeMode="tail">
-                    {product.productId.name}
+                    {product.name}
                 </Text>
                 <View style={{ marginTop: 10 }}>
                     <Text style={styles.text}>Product code: {product.code}</Text>
                     <Text style={styles.text}>Color: {product.color.name}</Text>
                     <Text style={styles.text}>Size: {product.size}</Text>
                 </View>
-                <Text style={styles.productPrice}>{formatCurrency(product.productId.price)} VNĐ</Text>
+                <Text style={styles.productPrice}>{formatCurrency(product.price)} VNĐ</Text>
                 <View
                     style={{
                         marginTop: 10,
@@ -42,7 +52,7 @@ function CartItem({ product, handleOnPress, handleUpdateTotalPrice }) {
                     }}
                 >
                     <NumericInput
-                        onChange={(value) => handleChangeQuantity(value)}
+                        onChange={(value) => handleChangeQuantity(value) }
                         step={1}
                         minValue={1}
                         rounded
@@ -59,6 +69,7 @@ function CartItem({ product, handleOnPress, handleUpdateTotalPrice }) {
                     <TouchableOpacity 
                         style={styles.deleteBtn} 
                         activeOpacity={0.5}
+                        onPress={() => setCurrentProductId(product.productId.toString())}
                     >
                         <AntDesign name="delete" size={26} color="#000" />
                     </TouchableOpacity>
