@@ -1,11 +1,12 @@
 import { View, Text, StyleSheet, SafeAreaView, ScrollView, Pressable, Modal} from 'react-native'
-import { useCallback, useEffect, useState } from 'react';
-import { useSelector } from 'react-redux'
+import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux'
 
 import GlobalStyles from '../untils/GlobalStyles';
 import CartItem from '../components/CartItem';
+import { setCartAction } from '../redux/actions'
 import CustomButton from '../components/CustomButton'
-import { fetchProductsFromServer } from '../services'
+import { fetchProductsFromServer, updateUserCart } from '../services'
 import AppLoading from '../components/AppLoading'
 import formatCurrency from '../untils/formatCurrency';
 
@@ -17,6 +18,8 @@ function Cart({ navigation }) {
     const [currentProductId, setCurrentProductId] = useState('')
     
     const cart = useSelector(state => state.cartReducer.cart)
+    const token = useSelector(state => state.authReducer.userToken)
+    const dispatch = useDispatch()
     
     useEffect(() => {
         fetchProductsFromServer()
@@ -32,39 +35,87 @@ function Cart({ navigation }) {
                         code : product?.code,
                     })
                 })
-                setCartProducts(userCart)
                 setProducts(products)
+                setCartProducts(userCart)
+                handleCalculateTotalPrice(userCart)
                 setIsLoading(false)
             })
             .catch(error => console.error(error))
+        console.log('Fetch products')
+    }, [])
+    
+    useEffect(() => {          
+        let userCart = []
+        cart.forEach(cartProduct => {
+            const product = products.find(product => product._id.toString() === cartProduct.productId.toString())
+            userCart.push({
+                ...cartProduct,
+                name : product?.name,
+                price : product?.price,
+                code : product?.code,
+            })
+        })
+        setCartProducts(userCart)
         console.log("Fetch user's cart")
     }, [cart])
-    
-    useEffect(() => {
-        handleCalculateTotalPrice()
-    }, [cartProducts])
 
+    
     //handler functions 
-    const handleCalculateTotalPrice = useCallback(() => {
-        let total = cartProducts.reduce((sum, currItem) => {
+    const handleCalculateTotalPrice = (newCart) => {
+        let userCart = []
+        if(!newCart.length){
+            setTotalPrice(0)
+            return
+        }
+
+        if(newCart?.[0].price) {
+            userCart = [...newCart]
+        }
+        else {
+            newCart.forEach(cartProduct => {
+                const product = products.find(product => product._id.toString() === cartProduct.productId.toString())
+                userCart.push({
+                    ...cartProduct,
+                    name : product?.name,
+                    price : product?.price,
+                    code : product?.code,
+                })
+            })
+        }
+
+        let total = userCart.reduce((sum, currItem) => {
             return sum + Number(currItem.price)*Number(currItem.quantity)
         }, 0)
         console.log('Update total price')
         setTotalPrice(total)
-    }, [cartProducts])
+    }
+
+    const handleDeleteProductCart = () => {
+        setIsLoading(true)
+        const newCart = cart.filter(item => item.productId.toString() !== currentProductId)
+        handleCalculateTotalPrice(newCart)
+        updateUserCart(token, newCart)
+            .then((res) => {
+                setCurrentProductId('')
+                dispatch(setCartAction(res.data.cart))
+                setIsLoading(false)
+            })
+            .catch(err => console.error(err))
+    }
 
     return ( 
         <SafeAreaView style={styles.container}>
            {
                 isLoading ? (
-                    <AppLoading isWhiteBackground />
+                    <AppLoading backgroundColor={Boolean(!cartProducts.length)? '#fff' : 'transparent'} />
                 ) : (
                     !Boolean(cart.length) ? (
-                        <View style={styles.container}>
-                            <Text>Bạn chưa có sản phẩm trong giỏ hàng</Text>
+                        <View style={styles.noProductContainer}>
+                            <Text style={styles.noProductText}>Bạn chưa có sản phẩm trong giỏ hàng!</Text>
                             <CustomButton 
                                 title={"Thêm sản phẩm mới"}
-                                handleOnPress={() => navigation.navigate('Home')}
+                                extraStyles={styles.noProductButton}
+                                handleOnPress={() => navigation.navigate('home')}
                             />
                         </View>
                     ) : (
@@ -80,8 +131,9 @@ function Cart({ navigation }) {
                                             key={product.toString()+index}
                                             product={product}
                                             handleOnPress={() => navigation.navigate('productDetail', { product: products.find(item => item._id.toString() === product.productId.toString()) })}  
-                                            setCartProducts={setCartProducts}
                                             setCurrentProductId={setCurrentProductId}
+                                            handleCalculateTotalPrice={handleCalculateTotalPrice}
+                                            setIsLoading={setIsLoading}
                                         />
                                     )
                                 })
@@ -111,6 +163,7 @@ function Cart({ navigation }) {
                                         <View style={styles.modalControls}>
                                             <Pressable
                                                 style={[styles.modalButton, { backgroundColor : 'red' }]}
+                                                onPress={handleDeleteProductCart}
                                             >
                                                 <Text style={[styles.modalText, { color : '#fff' }]}>Xóa</Text>
                                             </Pressable>
@@ -187,6 +240,22 @@ const styles = StyleSheet.create({
         padding : 10,
         borderRadius : 6
     },
+    noProductContainer : {
+        width : '100%',
+        flex : 1,
+        justifyContent : 'center',
+        alignItems : 'center'
+    },
+    noProductText : {
+        fontSize : 20,
+        fontWeight : '600',
+        marginBottom : 20,
+        color : '#333'
+    },
+    noProductButton : {
+        width : '60%',
+        borderRadius : 4,
+    }
 })
 
 export default Cart;

@@ -1,34 +1,40 @@
 'use strict';
 import { Pressable, Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import NumericInput from 'react-native-numeric-input';
 import { AntDesign } from '@expo/vector-icons';
 import { useDispatch, useSelector } from 'react-redux'
 
 import formatCurrency from '../untils/formatCurrency';
-import { useEffect, useState } from 'react';
+import { updateUserCart } from '../services'
+import { setCartAction } from '../redux/actions'
 import GlobalStyles from '../untils/GlobalStyles';
 
 // product { productId, name, image, price, quantity, size, color { name, image }, code} from ProductDetail
-
-function CartItem({ product, handleOnPress, setCartProducts, setCurrentProductId }) {
+function CartItem({ product, handleOnPress, setCurrentProductId , handleCalculateTotalPrice}) {
     const [quantity, setQuantity] = useState(product.quantity);
     const cart = useSelector(state => state.cartReducer.cart)
     const token = useSelector(state => state.authReducer.userToken)
     const dispatch = useDispatch()
 
     const handleChangeQuantity = (newQuantity) => {
-       if(newQuantity > quantity) {
-
-       }
-       else {
-            if(quantity === 1)  
-            {
-                setCurrentProductId(product.productId)
-                return
+        setQuantity(newQuantity)    
+        const newCart = cart.map(item => {
+            if(item.productId.toString() === product.productId.toString()){
+                item.quantity = newQuantity
             }
-       }
-    };
+            return item
+        })
+
+        handleCalculateTotalPrice(newCart)
+        updateUserCart(token, newCart)
+            .then(response => {
+                dispatch(setCartAction(response.data.cart))
+            })
+            .catch(error => console.error(error))
+        
+    }
 
     return (
         <Pressable style={styles.cartItemContainer} onPress={handleOnPress}>

@@ -75,6 +75,11 @@ export const fetchCart = (token) => {
    return axios.get(`${baseUrl}/cart/${token}`)
 }
 
+// update user's cart
+export const updateUserCart = (token, products) => {
+   return axios.patch(`${baseUrl}/cart/update`, { token, products })
+}
+
 //Categories APIs
 // get all of categories from database
 export const fetchCategories = () => {

@@ -34,7 +34,7 @@ function Profile({ navigation }) {
         <SafeAreaView style={[GlobalStyles.container, { paddingVertical : 0, paddingHorizontal : 0, backgroundColor : 'ligthgrey'}]}>
             {
                 isLoading ? (
-                    <AppLoading isWhiteBackground />
+                    <AppLoading backgroundColor='#fff' />
                 ) : (
                     <>
                             <ScrollView showsVerticalScrollIndicator={false} style={{ width : '100%' }}>
