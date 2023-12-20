@@ -160,7 +160,7 @@ function ProductDetail({ navigation, route }) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, marginBottom: 30 }}>
+            <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, marginBottom: 30, paddingHorizontal: 10, }}>
                 <Image
                     source={{ uri: selectedColor?.image }}
                     style={{ width: '100%', height: 350, borderBottomWidth: 1, borderRadius: 10 }}
@@ -211,7 +211,6 @@ function ProductDetail({ navigation, route }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        paddingHorizontal: 10,
     },
     productName: {
         fontSize: 30,
