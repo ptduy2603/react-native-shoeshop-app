@@ -9,13 +9,14 @@ import {
     ScrollView,
     StyleSheet,
     TouchableOpacity,
+    Share,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCartAction, addToFavoritesAction } from '../redux/actions';
 import { addProductToCart } from '../services';
 import GlobalStyles from '../untils/GlobalStyles';
 import formatCurrency from '../untils/formatCurrency';
-import { FontAwesome } from '@expo/vector-icons';
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
 
 function ProductDetail({ navigation, route }) {
     const { product } = route.params;
@@ -81,6 +82,20 @@ function ProductDetail({ navigation, route }) {
         });
     }, [navigation, product]);
 
+    const ShareProduct = async () => {
+        const ShareOptions = {
+            message: 'Hãy mua sản phẩm nha mọi người',
+            url: product.image,
+        };
+
+        try {
+            const ShareResponse = await Share.share(ShareOptions);
+            console.log(JSON.stringify(ShareResponse));
+        } catch (error) {
+            console.log('Error =>', error);
+        }
+    };
+
     const renderColorOptions = () => {
         return (
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
@@ -117,7 +132,7 @@ function ProductDetail({ navigation, route }) {
                             {
                                 backgroundColor:
                                     size && size === sizeOption.toString()
-                                        ? '#00bcd4'
+                                        ? GlobalStyles.primaryColor
                                         : 'transparent',
                             },
                         ]}
@@ -145,24 +160,27 @@ function ProductDetail({ navigation, route }) {
 
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView style={{ flex: 1, marginBottom: 30 }}>
+            <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, marginBottom: 30 }}>
                 <Image
                     source={{ uri: selectedColor?.image }}
                     style={{ width: '100%', height: 350, borderBottomWidth: 1, borderRadius: 10 }}
                 />
                 <Text style={styles.productName}>{product.name}</Text>
-                <View
-                    style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                        borderWidth: 1,
-                        borderColor: '#ccc',
-                        padding: 10,
-                    }}
-                >
+                <View style={styles.showPrice}>
                     <Text style={styles.productPrice}>Giá: {formatCurrency(product.price)}VNĐ</Text>
-                    <Button title="Add to Favorites" onPress={handleAddToFavorites} />
+
+                    <View style={styles.option}>
+                        <TouchableOpacity
+                            style={styles.button_option}
+                            onPress={handleAddToFavorites}
+                        >
+                            <FontAwesome name="heart" size={24} color="white" />
+                        </TouchableOpacity>
+
+                        <TouchableOpacity style={styles.button_option} onPress={ShareProduct}>
+                            <Ionicons name="share-social-outline" size={24} color="white" />
+                        </TouchableOpacity>
+                    </View>
                 </View>
                 {renderColorOptions()}
                 {renderSizeOptions()}
@@ -170,29 +188,9 @@ function ProductDetail({ navigation, route }) {
                 <Text style={styles.product_desc}>{product.desc}</Text>
             </ScrollView>
 
-            <View
-                style={{
-                    position: 'absolute',
-                    bottom: 0,
-                    width: '100%',
-                    backgroundColor: 'white',
-                    borderTopWidth: 1,
-                    borderColor: '#ccc',
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    padding: 10,
-                }}
-            >
+            <View style={styles.showCart}>
                 <TouchableOpacity
-                    style={{
-                        flex: 1,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: '#4CAF50',
-                        borderRadius: 5,
-                        padding: 10,
-                    }}
+                    style={styles.button_cart}
                     onPress={handleAddProductToCart}
                 >
                     <FontAwesome
@@ -204,20 +202,6 @@ function ProductDetail({ navigation, route }) {
                     <Text style={{ color: 'white', fontSize: 18 }}>
                         {loading ? '️Adding to Cart...' : 'Add to Cart'}
                     </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                    style={{
-                        marginLeft: 10,
-                        backgroundColor: '#2196F3',
-                        borderRadius: 5,
-                        padding: 10,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                    }}
-                    onPress={handleAddToFavorites}
-                >
-                    <FontAwesome name="heart" size={24} color="white" />
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -245,20 +229,24 @@ const styles = StyleSheet.create({
         paddingHorizontal: 10,
     },
     product_desc: {
-        fontSize: 16,
-        textAlign: 'left',
+        fontSize: 18,
+        textAlign: 'justify',
         paddingHorizontal: 10,
+        marginBottom: 40,
     },
     colorThumbnail: {
         borderWidth: 2,
-        borderRadius: 20,
+        borderRadius: 10,
+        overflow: 'hidden',
+        width: 80,
+        height: 80,
         margin: 5,
         padding: 5,
+        marginVertical: 16,
     },
     colorImage: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        width: '100%',
+        height: '100%',
     },
     sizeButton: {
         borderWidth: 1,
@@ -266,9 +254,52 @@ const styles = StyleSheet.create({
         margin: 5,
         paddingVertical: 8,
         paddingHorizontal: 12,
+        marginBottom: 16,
     },
     sizeButtonText: {
         fontSize: 16,
+    },
+    showPrice: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        borderWidth: 1,
+        borderColor: '#ccc',
+        padding: 10,
+        marginVertical: 10,
+    },
+    showCart: {
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
+        backgroundColor: 'white',
+        borderTopWidth: 1,
+        borderColor: '#ccc',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        padding: 10,
+    },
+    option: {
+        flexDirection: 'row',
+        alignItems: 'right',
+        justifyContent: 'space-between',
+    },
+    button_option: {
+        marginLeft: 10,
+        backgroundColor: '#2196F3',
+        borderRadius: 5,
+        padding: 10,
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    button_cart: {
+        flex: 1,
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center',
+        backgroundColor: GlobalStyles.primaryColor,
+        borderRadius: 5,
+        padding: 10,
     },
 });
 
