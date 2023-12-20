@@ -93,7 +93,7 @@ export const fetchUserFavourites = (token) => {
 }
 // update user's favourite products
 export const updateUserFavouriteProducts = (token, products) => {
-   return axios.patch(`${baseUrl}/update-favourites`, { token, products })
+   return axios.patch(`${baseUrl}/users/update-favourites`, { token, products })
 }
 
 // Payment API

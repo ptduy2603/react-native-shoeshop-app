@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect } from 'react';
+import React, { useState, useLayoutEffect, useEffect } from 'react';
 import {
     Text,
     Button,
@@ -13,16 +13,35 @@ import {
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCartAction, addToFavoritesAction } from '../redux/actions';
-import { addProductToCart } from '../services';
+import { addProductToCart, updateUserFavouriteProducts } from '../services';
 import GlobalStyles from '../untils/GlobalStyles';
 import formatCurrency from '../untils/formatCurrency';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 
+
+// tạo state isLiked
+// dùng useEffect để check product đã được like hay chưa
+// tạo toast message khi like product
 function ProductDetail({ navigation, route }) {
     const { product } = route.params;
     const token = useSelector((state) => state.authReducer.userToken);
     const cart = useSelector((state) => state.cartReducer.cart);
+    const favourites = useSelector((state) => state.favorReducer.favorites);
     const dispatch = useDispatch();
+
+    const [isLiked, setIsLiked] = useState();
+
+    useEffect(() => {
+        isLikedProduct = favourites.find(
+            (favorProduct) => favorProduct._id.toString() === product._id.toString()
+        )
+        if(isLikedProduct) {
+            setIsLiked(true)
+        } else {
+            setIsLiked(false)
+        }
+    }, [])
+
 
     const [size, setSize] = useState(
         product.sizes && product.sizes.length > 0 ? product.sizes[0].toString() : null
@@ -73,8 +92,23 @@ function ProductDetail({ navigation, route }) {
     };
 
     const handleAddToFavorites = () => {
-        dispatch(addToFavoritesAction(product));
+        let likedProduct = []
+        if(isLiked) {
+          likedProduct = favourites.filter((favorProduct) => favorProduct._id.toString() !== product._id.toString())
+          likedProduct = likedProduct.map((favorProduct) => favorProduct._id)
+        }
+        else {
+            likedProduct = favourites.map((favorProduct) => favorProduct._id)
+            likedProduct.push(product._id)
+        }
+        setIsLiked(!isLiked)
+        updateUserFavouriteProducts(token, likedProduct) 
+            .then(response => {
+              dispatch(addToFavoritesAction(response.data.products))
+            })
+            .catch(err => console.error(err))
     };
+
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -174,7 +208,7 @@ function ProductDetail({ navigation, route }) {
                             style={styles.button_option}
                             onPress={handleAddToFavorites}
                         >
-                            <FontAwesome name="heart" size={24} color="white" />
+                            <FontAwesome name="heart" size={24} color= {isLiked ? "red" : "white"} />
                         </TouchableOpacity>
 
                         <TouchableOpacity style={styles.button_option} onPress={ShareProduct}>

@@ -1,54 +1,58 @@
-import { View, Text, StyleSheet, SafeAreaView } from 'react-native'
-import { addToFavoritesAction } from '../redux/actions'
+import { View, Text, StyleSheet, SafeAreaView, FlatList, Dimensions } from 'react-native';
+import { addToFavoritesAction } from '../redux/actions';
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
-import AppLoading from '../components/AppLoading'
-import { useSelector, useDispatch } from 'react-redux'
+import AppLoading from '../components/AppLoading';
+import { useSelector, useDispatch } from 'react-redux';
 import ProductCard from '../components/ProductCard';
 import GlobalStyles from '../untils/GlobalStyles';
 
-function Favourite({navigation}) {
-    const favourites = useSelector(state => state.favorReducer.favorites)
-    const [products, setProducts] = useState([])
-    const [isLoading, setIsLoading] = useState(true)
-    const dispatch = useDispatch()
 
-    const handleRenderProduct = (data) => {
-        return (
+function Favourite({ navigation }) {
+    const favourites = useSelector((state) => state.favorReducer.favorites);
+    const [isLoading, setIsLoading] = useState(true);
+    const dispatch = useDispatch();
+
+    return (
+        <SafeAreaView style={[GlobalStyles.container, styles.container]}>
             <FlatList
-                data={data}
-                style={styles.productSectionWrapper}
+                data={favourites}
+                style={styles.favorSectionWrapper}
                 keyExtractor={(item, index) => item + index}
                 numColumns={2}
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ alignItems : 'center', justifyContent : 'space-between' }}
-                renderItem={({ item, index}) => {
+                contentContainerStyle={{ justifyContent: 'space-between' }}
+                renderItem={({ item, index }) => {
                     return (
                         <ProductCard
                             product={item}
                             extraStyles={{ 
+                                minWidth: '49%',
+                                marginTop: 10,
                                 marginLeft : index%2 === 0 ? 0 : 4,
                                 marginRight : index%2 === 0 ? 4 : 0,
                             }}
-                            handleOnPress={() => navigation.navigate('productDetail', { product : item })}
+                            handleOnPress={() =>
+                                navigation.navigate('productDetail', { product: item })
+                            }
                         />
                     );
                 }}
             />
-        );
-    };
-    return ( 
-        <SafeAreaView style={[GlobalStyles.container]}>
-            {
-                favourites.map(product => {
-                    return (
-                        <Text key={product._id}>{product.name}</Text>
-                    )
-                })
-            }
         </SafeAreaView>
-     )
+    );
 }
 
-const styles = StyleSheet.create({})
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        width: Dimensions.get('window').width,
+        backgroundColor: '#fff',
+    },
+    favorSectionWrapper: {
+        width: '100%',
+        gap: 10,
+        rowGap: 10,
+    },
+});
 
 export default Favourite;
