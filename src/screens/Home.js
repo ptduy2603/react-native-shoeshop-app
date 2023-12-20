@@ -149,7 +149,7 @@ function Home({ navigation }) {
         <SafeAreaView style={[GlobalStyles.container, styles.homeContainer]}>
             {
                 isLoading ? (
-                    <AppLoading isWhiteBackground />
+                    <AppLoading backgroundColor='#fff' />
                 ) : 
                 (
                     <>
