@@ -1,68 +1,172 @@
-import { Text, Button, SafeAreaView, Alert } from "react-native";
-import { useDispatch, useSelector } from 'react-redux'
-import { useState, useLayoutEffect } from "react";
+import React, { useState, useLayoutEffect } from 'react';
+import { Text, Button, SafeAreaView, Alert, View, Image, ScrollView } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { useDispatch, useSelector } from 'react-redux';
+import { setCartAction, addToFavoritesAction } from '../redux/actions';
+import { addProductToCart } from '../services';
+import GlobalStyles from '../untils/GlobalStyles';
+import formatCurrency from '../untils/formatCurrency';
 
-import { setCartAction } from '../redux/actions'
-import { addProductToCart } from '../services'
-import GlobalStyles from "../untils/GlobalStyles";
+function ProductDetail({ navigation, route }) {
+    const { product } = route.params;
+    const token = useSelector((state) => state.authReducer.userToken);
+    const cart = useSelector((state) => state.cartReducer.cart);
+    const dispatch = useDispatch();
 
-function ProductDetail({ navigation , route }) {
-    const { product } = route.params
-    const token = useSelector(state => state.authReducer.userToken)
-    const cart = useSelector(state => state.cartReducer.cart)
-    const [size, setSize] = useState(40)
-    const [color , setColor] = useState({ name : 'red', image : 'test' })    // cho user lựa chọn và set lại
-    const dispatch = useDispatch()
-    
-    // product nhận từ home { _id , name, price, colors, sizes,  des, genre, ....} giống dưới database
-    // công việc : 
-    // render thông tin của sản phẩm colors, sizes ở dạng select
-    // user phải lựa chọn đầy đủ thông tin mới dc thêm product vào giỏ hàng
-    // ==> Đầu ra cần 1 object product { _id, size (Number), color (Object { type , image }) }
-    // nhấn yêu thích để push thông tin product vào Favourites
-    // t đã viết sẵn chức năng đẩy product vào giỏ và store redux
+    const [size, setSize] = useState(
+        product.sizes && product.sizes.length > 0 ? product.sizes[0].toString() : null
+    );
+
+    const [selectedColor, setSelectedColor] = useState(
+        product.colors && product.colors.length > 0 ? product.colors[0] : null
+    );
+
+    const [loading, setLoading] = useState(false);
+
     const handleAddProductToCart = () => {
-        // kiểm tra điều kiện các trường input và tổng hợp, t chỉ mới test if...else
-        const existsProduct = cart.find(cartProduct => cartProduct.productId.toString() === product._id.toString() && cartProduct.size === size && cartProduct.color.name === color.name)
-        if(existsProduct)
-        {
-            Alert.alert('Thông báo', 'Sản phẩm đã tồn tại trong giỏ hàng')
-            return
+        const existsProduct = cart.find(
+            (cartProduct) =>
+                cartProduct.productId.toString() === product._id.toString() &&
+                cartProduct.size === size &&
+                cartProduct.color.name === selectedColor.color
+        );
+
+        if (existsProduct) {
+            Alert.alert('Thông báo', 'Sản phẩm đã tồn tại trong giỏ hàng');
+            return;
         }
 
         const selectedProduct = {
-            productId : product._id,
-            quantity : 1,
+            productId: product._id,
+            quantity: 1,
             size,
-            color
-        }
+            color: selectedColor,
+        };
 
-        const newCart = [...cart, selectedProduct]
-        dispatch(setCartAction(newCart))
+        const newCart = [...cart, selectedProduct];
+        dispatch(setCartAction(newCart));
+
+        setLoading(true);
+
         addProductToCart(token, selectedProduct)
-            .then(res => Alert.alert('Thông báo', 'Sản phẩm đã được thêm vào giỏ hàng'))
-            .catch(err => console.error(err))
-    }
+            .then(() => {
+                Alert.alert('Thông báo', 'Sản phẩm đã được thêm vào giỏ hàng');
+            })
+            .catch((err) => {
+                Alert.alert('Lỗi', 'Có lỗi xảy ra khi thêm sản phẩm vào giỏ hàng');
+                console.error(err);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
+    };
+
+    const handleAddToFavorites = () => {
+        dispatch(addToFavoritesAction(product));
+    };
 
     useLayoutEffect(() => {
         navigation.setOptions({
-            headerTitle : product.name
-        })
-    }, [navigation, product])
+            headerTitle: product.name,
+        });
+    }, [navigation, product]);
+
+    const renderColorOptions = () => {
+        return (
+            <View>
+                {/* Color Picker */}
+               <View >
+                    <Text style={{ fontSize: 18, marginTop: 10 }}>Choose Color:</Text>
+                    <Picker
+                        selectedValue={selectedColor}
+                        onValueChange={(itemValue) => setSelectedColor(itemValue)}
+                    >
+                        {product.colors.map((colorOption, index) => (
+                            <Picker.Item key={index} label={colorOption.color} value={colorOption} />
+                        ))}
+                    </Picker>
+               </View>
     
-    return ( 
-        <SafeAreaView style={[GlobalStyles.container, { marginTop : 0 }]}>
-            {/* Just for testing */}
-            <Text>This is product detail screen</Text>
-            <Text>Product name : {product.name}</Text>
-            <Text>Product ID : {product._id}</Text>
-            <Button 
-                title="Add to cart"
-                onPress={handleAddProductToCart}
-            />
+                {/* Size Picker */}
+               <View>
+                    <Text style={{ fontSize: 18, marginTop: 10 }}>Choose Size:</Text>
+                    <Picker
+                        selectedValue={size}
+                        onValueChange={(itemValue) => setSize(itemValue)}
+                    >
+                        {product.sizes.map((sizeOption, index) => (
+                            <Picker.Item key={index} label={sizeOption.toString()} value={sizeOption} />
+                        ))}
+                    </Picker>
+               </View>
+            </View>
+        );
+    };
+
+    return (
+        <SafeAreaView style={{ flex: 1 }}>
+            <ScrollView style={{ flex: 1, marginBottom: 30, }}>
+                <Image
+                    source={{ uri: selectedColor?.image }}
+                    style={{ width: '100%', height: 350, borderBottomWidth: 1, borderRadius: 10 }}
+                />
+                <Text style={{ fontSize: 36, fontWeight: 'bold', textAlign: 'center' }}>
+                    {product.name}
+                </Text>
+                <View
+                    style={{
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                        borderWidth: 1,
+                        borderColor: '#ccc',
+                        padding: 10,
+                    }}
+                >
+                    <Text style={{ fontSize: 30, fontWeight: 'bold', marginRight: 10 }}>
+                        Giá: {formatCurrency(product.price)}VNĐ
+                    </Text>
+                    <Button title="Add to Favorites" onPress={handleAddToFavorites} />
+                </View>
+                {renderColorOptions()}
+
+                <Text style={{ fontSize: 30, fontWeight: 'bold', marginVertical: 10 }}>
+                    Mô tả sản phẩm:{' '}
+                </Text>
+                <Text
+                    style={{
+                        fontSize: 24,
+                        marginVertical: 10,
+                        borderTopWidth: 1,
+                        paddingHorizontal: 10,
+                    }}
+                >
+                    {product.desc}
+                </Text>
+
+                {/* Render color options */}
+                
+            </ScrollView>
+
+            <View
+                style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    width: '100%',
+                    backgroundColor: 'white',
+                    borderTopWidth: 1,
+                    borderColor: '#ccc',
+                }}
+            >
+                <Button
+                    title={loading ? '️🛒 Adding to Cart...' : '️🛒 Add to Cart'}
+                    onPress={handleAddProductToCart}
+                    disabled={loading}
+
+                />
+            </View>
         </SafeAreaView>
-     )
+    );
 }
 
 export default ProductDetail;
-
