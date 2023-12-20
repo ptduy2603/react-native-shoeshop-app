@@ -51,7 +51,7 @@ function ProductDetail({ navigation, route }) {
             productId: product._id,
             quantity: 1,
             size,
-            color: selectedColor,
+            color: { name : selectedColor.color, image : selectedColor.image },
         };
 
         const newCart = [...cart, selectedProduct];

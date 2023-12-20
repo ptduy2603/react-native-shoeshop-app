@@ -12,7 +12,7 @@ import { setCartAction } from '../redux/actions'
 import GlobalStyles from '../untils/GlobalStyles';
 
 // product { productId, name, image, price, quantity, size, color { name, image }, code} from ProductDetail
-function CartItem({ product, handleOnPress, setCurrentProductId , handleCalculateTotalPrice}) {
+function CartItem({ product, handleOnPress, setSelectedProduct , handleCalculateTotalPrice}) {
     const [quantity, setQuantity] = useState(product.quantity);
     const cart = useSelector(state => state.cartReducer.cart)
     const token = useSelector(state => state.authReducer.userToken)
@@ -45,7 +45,7 @@ function CartItem({ product, handleOnPress, setCurrentProductId , handleCalculat
                 </Text>
                 <View style={{ marginTop: 10 }}>
                     <Text style={styles.text}>Product code: {product.code}</Text>
-                    <Text style={styles.text}>Color: {product.color.name}</Text>
+                    <Text style={styles.text}>Color: {product?.color?.name}</Text>
                     <Text style={styles.text}>Size: {product.size}</Text>
                 </View>
                 <Text style={styles.productPrice}>{formatCurrency(product.price)} VNĐ</Text>
@@ -75,7 +75,7 @@ function CartItem({ product, handleOnPress, setCurrentProductId , handleCalculat
                     <TouchableOpacity 
                         style={styles.deleteBtn} 
                         activeOpacity={0.5}
-                        onPress={() => setCurrentProductId(product.productId.toString())}
+                        onPress={() => setSelectedProduct(product)}
                     >
                         <AntDesign name="delete" size={26} color="#000" />
                     </TouchableOpacity>

@@ -15,7 +15,7 @@ function Cart({ navigation }) {
     const [products, setProducts] = useState([])
     const [cartProducts, setCartProducts] = useState([])
     const [isLoading, setIsLoading] = useState(true)
-    const [currentProductId, setCurrentProductId] = useState('')
+    const [selectedProduct, setSelectedProduct] = useState({})
     
     const cart = useSelector(state => state.cartReducer.cart)
     const token = useSelector(state => state.authReducer.userToken)
@@ -92,11 +92,11 @@ function Cart({ navigation }) {
 
     const handleDeleteProductCart = () => {
         setIsLoading(true)
-        const newCart = cart.filter(item => item.productId.toString() !== currentProductId)
+        const newCart = cart.filter(item => item.productId.toString() !== selectedProduct.productId.toString() || item.size !== selectedProduct.size || item.color.name !== selectedProduct.color.name)
         handleCalculateTotalPrice(newCart)
         updateUserCart(token, newCart)
             .then((res) => {
-                setCurrentProductId('')
+                setSelectedProduct({})
                 dispatch(setCartAction(res.data.cart))
                 setIsLoading(false)
             })
@@ -131,7 +131,7 @@ function Cart({ navigation }) {
                                             key={product.toString()+index}
                                             product={product}
                                             handleOnPress={() => navigation.navigate('productDetail', { product: products.find(item => item._id.toString() === product.productId.toString()) })}  
-                                            setCurrentProductId={setCurrentProductId}
+                                            setSelectedProduct={setSelectedProduct}
                                             handleCalculateTotalPrice={handleCalculateTotalPrice}
                                             setIsLoading={setIsLoading}
                                         />
@@ -153,7 +153,7 @@ function Cart({ navigation }) {
                             </View>
 
                             <Modal
-                                visible={Boolean(currentProductId)}
+                                visible={Boolean(Object.keys(selectedProduct).length)}
                                 animationType='fade'
                                 transparent
                             >
@@ -169,7 +169,7 @@ function Cart({ navigation }) {
                                             </Pressable>
                                             <Pressable
                                                 style={[styles.modalButton, { backgroundColor : GlobalStyles.primaryColor }]}
-                                                onPress={() => setCurrentProductId('')}
+                                                onPress={() => setSelectedProduct({})}
                                             >
                                                 <Text style={[styles.modalText, { color : '#fff' }]}>Hủy</Text>
                                             </Pressable>
