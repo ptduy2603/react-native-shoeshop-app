@@ -1,5 +1,5 @@
-import { View, Text, StyleSheet, SafeAreaView, ScrollView, Pressable, Modal} from 'react-native'
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { View, Text, StyleSheet, SafeAreaView, ScrollView, Pressable, Modal, Image} from 'react-native'
+import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux'
 
 import GlobalStyles from '../untils/GlobalStyles';
@@ -56,18 +56,19 @@ function Cart({ navigation }) {
             })
         })
         setCartProducts(userCart)
+        handleCalculateTotalPrice(userCart)
         console.log("Fetch user's cart")
     }, [cart])
 
     
     //handler functions 
     const handleCalculateTotalPrice = (newCart) => {
-        let userCart = []
         if(!newCart.length){
             setTotalPrice(0)
             return
         }
-
+        
+        let userCart = []
         if(newCart?.[0].price) {
             userCart = [...newCart]
         }
@@ -111,6 +112,7 @@ function Cart({ navigation }) {
                 ) : (
                     !Boolean(cart.length) ? (
                         <View style={styles.noProductContainer}>
+                            <Image source={require('../../assets/images/empty_cart.png')} style={styles.emptyCartImage} />
                             <Text style={styles.noProductText}>Bạn chưa có sản phẩm trong giỏ hàng!</Text>
                             <CustomButton 
                                 title={"Thêm sản phẩm mới"}
@@ -255,6 +257,11 @@ const styles = StyleSheet.create({
     noProductButton : {
         width : '60%',
         borderRadius : 4,
+    },
+    emptyCartImage : {
+        width : 200,
+        height : 200,
+        marginVertical : 10
     }
 })
 

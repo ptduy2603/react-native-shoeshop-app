@@ -1,6 +1,6 @@
 'use strict';
 import { Pressable, Text, View, StyleSheet, Image, TouchableOpacity } from 'react-native';
-import { useCallback, useEffect, useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import NumericInput from 'react-native-numeric-input';
 import { AntDesign } from '@expo/vector-icons';
@@ -21,7 +21,7 @@ function CartItem({ product, handleOnPress, setSelectedProduct , handleCalculate
     const handleChangeQuantity = (newQuantity) => {
         setQuantity(newQuantity)    
         const newCart = cart.map(item => {
-            if(item.productId.toString() === product.productId.toString()){
+            if(item.productId.toString() === product.productId.toString() && item.size === product.size && item.color.name === product.color.name){
                 item.quantity = newQuantity
             }
             return item

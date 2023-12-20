@@ -96,3 +96,8 @@ export const updateUserFavouriteProducts = (token, products) => {
    return axios.patch(`${baseUrl}/update-favourites`, { token, products })
 }
 
+// Payment API
+// place an order
+export const placeOrder = (token, products, shippingAddress, totalPrice, paymentMethod) => {
+   return axios.post(`${baseUrl}/payments/order`, { token, products, shippingAddress, totalPrice, paymentMethod })
+}

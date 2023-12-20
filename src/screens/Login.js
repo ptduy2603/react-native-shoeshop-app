@@ -93,7 +93,7 @@ function Login({ navigation }) {
                         fetchCart(response.data.token)
                             .then(res => dispatch(setCartAction(res.data.products)))
                             .catch(err => console.log(err))
-                        fetchUserFavourites(userToken)
+                        fetchUserFavourites(response.data.token)
                             .then(res => dispatch(addToFavoritesAction(res.data.products)))
                             .catch(err => console.error(err))
                     })

@@ -1,12 +1,12 @@
 import { SafeAreaView, ScrollView, Text, StyleSheet, View, Pressable, Image, Button} from "react-native";
 import { useCallback, useEffect, useState } from "react";
-import { useDispatch } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import SelectDropdown from 'react-native-select-dropdown'
 import { Entypo, FontAwesome5 } from "@expo/vector-icons";
 
 import { paymentSteps, paymentMethods } from '../data'
 import FormInputField from '../components/FormInputField'
-import { fetchCountryApi } from '../services'
+import { fetchCountryApi, placeOrder } from '../services'
 import GlobalStyles from '../untils/GlobalStyles'
 import CustomButton from '../components/CustomButton'
 import formatCurrency from '../untils/formatCurrency'
@@ -46,6 +46,7 @@ function Payment({ route, navigation }) {
     const [isLoading, setIsLoading] = useState(false)
     const [isShowCompleteMessage, setIsShowCompleteMessage] = useState(false)
     const dispatch = useDispatch()
+    const token = useSelector(state => state.authReducer.userToken)
 
     const handleFetchDistricts = useCallback(() => {
         fetchCountryApi(`province=${currentProvince.code || ''}`)
@@ -126,7 +127,25 @@ function Payment({ route, navigation }) {
     } 
 
     const handlePlaceOrder = () => {
-        console.log(products)
+        setIsLoading(true)
+        const orderProducts = products.map(item => {
+            const { productId, quantity, color : { name : color }, size } = item
+            return { productId, quantity, color, size }
+        })
+        const shippingAddress = {
+            phoneNumber,
+            ward : currentWard,
+            district : currentDistrict.name,
+            province : currentProvince.name,
+        }
+        const payment = paymentMethods.find(method => method.id === paymentMethod).title
+        placeOrder(token, orderProducts, shippingAddress, totalPrice, payment)
+            .then(res => {
+                setIsLoading(false)
+                setIsShowCompleteMessage(true)
+                dispatch(setCartAction([]))
+            })
+            .catch(err => console.error(err))
     }
 
     return ( 
