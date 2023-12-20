@@ -49,14 +49,14 @@ function BottomTabs () {
                 component={Favourite}
                 options={{
                     tabBarLabel: 'Favourites',
-                    headerShown : false,
                     tabBarIcon: ({ focused }) => {
                         return <FontAwesome name={focused ? 'heart' : 'heart-o'} size={22} color={focused ? GlobalStyles.primaryColor : '#000'} />
                     },
                     tabBarBadge: favouriteQuantity, 
                     tabBarBadgeStyle : {
                         display : favouriteQuantity ? 'flex' : 'none'
-                    }
+                    },
+                    headerTitle : "Favourites"
                 }}
             />
             <Tab.Screen 

@@ -9,7 +9,7 @@ const favorReducer = (state = initialState, action) => {
         case ADD_TO_FAVORITES:
             return {
                 ...state,
-                favorites: [...state.favorites, action.payload],
+                favorites: action.payload,
             };
         // ... (other cases)
         default:

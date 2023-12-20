@@ -9,6 +9,7 @@ import GlobalStyles from '../untils/GlobalStyles';
 
 function Favourite({ navigation }) {
     const favourites = useSelector((state) => state.favorReducer.favorites);
+    console.log(favourites)
     const [isLoading, setIsLoading] = useState(true);
     const dispatch = useDispatch();
 

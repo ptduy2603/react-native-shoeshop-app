@@ -18,7 +18,7 @@ export const setCartAction = (products) => {
 
 // favourites actions
 export const ADD_TO_FAVORITES = 'ADD_TO_FAVORITES';
-export const addToFavoritesAction = (product) => ({
+export const addToFavoritesAction = (products) => ({
     type: ADD_TO_FAVORITES,
-    payload: product,
+    payload: products,
 });

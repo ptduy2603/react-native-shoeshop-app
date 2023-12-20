@@ -1,7 +1,6 @@
 import React, { useState, useLayoutEffect, useEffect } from 'react';
 import {
     Text,
-    Button,
     SafeAreaView,
     Alert,
     View,
@@ -18,10 +17,6 @@ import GlobalStyles from '../untils/GlobalStyles';
 import formatCurrency from '../untils/formatCurrency';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
 
-
-// tạo state isLiked
-// dùng useEffect để check product đã được like hay chưa
-// tạo toast message khi like product
 function ProductDetail({ navigation, route }) {
     const { product } = route.params;
     const token = useSelector((state) => state.authReducer.userToken);
@@ -32,14 +27,21 @@ function ProductDetail({ navigation, route }) {
     const [isLiked, setIsLiked] = useState();
 
     useEffect(() => {
-        isLikedProduct = favourites.find(
-            (favorProduct) => favorProduct._id.toString() === product._id.toString()
-        )
-        if(isLikedProduct) {
-            setIsLiked(true)
-        } else {
+        if(!favourites.length)
             setIsLiked(false)
+        else {
+            isLikedProduct = favourites.find(
+                (favorProduct) => favorProduct._id.toString() === product._id.toString()
+            )
+    
+            if(isLikedProduct) {
+                setIsLiked(true)
+            } else {
+                setIsLiked(false)
+            }
         }
+        console.log('Check liked product')
+        console.log(favourites)
     }, [])
 
 
@@ -102,6 +104,7 @@ function ProductDetail({ navigation, route }) {
             likedProduct.push(product._id)
         }
         setIsLiked(!isLiked)
+
         updateUserFavouriteProducts(token, likedProduct) 
             .then(response => {
               dispatch(addToFavoritesAction(response.data.products))
