@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet, SafeAreaView, Image, ScrollView} from 'react-native'
 import { useSelector, useDispatch } from 'react-redux';
-import { FontAwesome, MaterialIcons } from '@expo/vector-icons';
+import { FontAwesome, MaterialIcons, FontAwesome5 } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import GlobalStyles from '../untils/GlobalStyles';
@@ -51,6 +51,13 @@ function Profile({ navigation }) {
                                         icon={<FontAwesome name='user' color={GlobalStyles.primaryColor} size={24}/>}
                                         isPrimaryTag
                                         handleOnPress={() => navigation.navigate('AccountDetail', { user })}
+                                        isShowMore
+                                    />
+                    
+                                    <OptionTag 
+                                        title="My orders"
+                                        icon={<FontAwesome5 name='money-bill' color={GlobalStyles.primaryColor} size={24}/>}
+                                        isPrimaryTag
                                         isShowMore
                                     />
                     
