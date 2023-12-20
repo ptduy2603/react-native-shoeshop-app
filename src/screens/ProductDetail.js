@@ -1,11 +1,21 @@
 import React, { useState, useLayoutEffect } from 'react';
-import { Text, Button, SafeAreaView, Alert, View, Image, ScrollView } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
+import {
+    Text,
+    Button,
+    SafeAreaView,
+    Alert,
+    View,
+    Image,
+    ScrollView,
+    StyleSheet,
+    TouchableOpacity,
+} from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { setCartAction, addToFavoritesAction } from '../redux/actions';
 import { addProductToCart } from '../services';
 import GlobalStyles from '../untils/GlobalStyles';
 import formatCurrency from '../untils/formatCurrency';
+import { FontAwesome } from '@expo/vector-icons';
 
 function ProductDetail({ navigation, route }) {
     const { product } = route.params;
@@ -73,46 +83,74 @@ function ProductDetail({ navigation, route }) {
 
     const renderColorOptions = () => {
         return (
-            <View>
-                {/* Color Picker */}
-               <View >
-                    <Text style={{ fontSize: 18, marginTop: 10 }}>Choose Color:</Text>
-                    <Picker
-                        selectedValue={selectedColor}
-                        onValueChange={(itemValue) => setSelectedColor(itemValue)}
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {product.colors.map((colorOption, index) => (
+                    <TouchableOpacity
+                        key={index}
+                        onPress={() => setSelectedColor(colorOption)}
+                        style={[
+                            styles.colorThumbnail,
+                            {
+                                borderColor:
+                                    selectedColor && selectedColor.color === colorOption.color
+                                        ? 'blue'
+                                        : 'transparent',
+                            },
+                        ]}
                     >
-                        {product.colors.map((colorOption, index) => (
-                            <Picker.Item key={index} label={colorOption.color} value={colorOption} />
-                        ))}
-                    </Picker>
-               </View>
-    
-                {/* Size Picker */}
-               <View>
-                    <Text style={{ fontSize: 18, marginTop: 10 }}>Choose Size:</Text>
-                    <Picker
-                        selectedValue={size}
-                        onValueChange={(itemValue) => setSize(itemValue)}
+                        <Image source={{ uri: colorOption.image }} style={styles.colorImage} />
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
+        );
+    };
+
+    const renderSizeOptions = () => {
+        return (
+            <ScrollView horizontal showsHorizontalScrollIndicator={false}>
+                {product.sizes.map((sizeOption, index) => (
+                    <TouchableOpacity
+                        key={index}
+                        onPress={() => setSize(sizeOption.toString())}
+                        style={[
+                            styles.sizeButton,
+                            {
+                                backgroundColor:
+                                    size && size === sizeOption.toString()
+                                        ? '#00bcd4'
+                                        : 'transparent',
+                            },
+                        ]}
                     >
-                        {product.sizes.map((sizeOption, index) => (
-                            <Picker.Item key={index} label={sizeOption.toString()} value={sizeOption} />
-                        ))}
-                    </Picker>
-               </View>
-            </View>
+                        <Text
+                            style={[
+                                styles.sizeButtonText,
+                                {
+                                    color:
+                                        size && size === sizeOption.toString()
+                                            ? 'white'
+                                            : '#00bcd4',
+                                    fontWeight:
+                                        size && size === sizeOption.toString() ? 'bold' : 'normal',
+                                },
+                            ]}
+                        >
+                            {sizeOption}
+                        </Text>
+                    </TouchableOpacity>
+                ))}
+            </ScrollView>
         );
     };
 
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <ScrollView style={{ flex: 1, marginBottom: 30, }}>
+        <SafeAreaView style={styles.container}>
+            <ScrollView style={{ flex: 1, marginBottom: 30 }}>
                 <Image
                     source={{ uri: selectedColor?.image }}
                     style={{ width: '100%', height: 350, borderBottomWidth: 1, borderRadius: 10 }}
                 />
-                <Text style={{ fontSize: 36, fontWeight: 'bold', textAlign: 'center' }}>
-                    {product.name}
-                </Text>
+                <Text style={styles.productName}>{product.name}</Text>
                 <View
                     style={{
                         flexDirection: 'row',
@@ -123,29 +161,13 @@ function ProductDetail({ navigation, route }) {
                         padding: 10,
                     }}
                 >
-                    <Text style={{ fontSize: 30, fontWeight: 'bold', marginRight: 10 }}>
-                        Giá: {formatCurrency(product.price)}VNĐ
-                    </Text>
+                    <Text style={styles.productPrice}>Giá: {formatCurrency(product.price)}VNĐ</Text>
                     <Button title="Add to Favorites" onPress={handleAddToFavorites} />
                 </View>
                 {renderColorOptions()}
-
-                <Text style={{ fontSize: 30, fontWeight: 'bold', marginVertical: 10 }}>
-                    Mô tả sản phẩm:{' '}
-                </Text>
-                <Text
-                    style={{
-                        fontSize: 24,
-                        marginVertical: 10,
-                        borderTopWidth: 1,
-                        paddingHorizontal: 10,
-                    }}
-                >
-                    {product.desc}
-                </Text>
-
-                {/* Render color options */}
-                
+                {renderSizeOptions()}
+                <Text style={styles.product_title}>Mô tả sản phẩm: </Text>
+                <Text style={styles.product_desc}>{product.desc}</Text>
             </ScrollView>
 
             <View
@@ -156,17 +178,98 @@ function ProductDetail({ navigation, route }) {
                     backgroundColor: 'white',
                     borderTopWidth: 1,
                     borderColor: '#ccc',
+                    flexDirection: 'row',
+                    justifyContent: 'space-between',
+                    padding: 10,
                 }}
             >
-                <Button
-                    title={loading ? '️🛒 Adding to Cart...' : '️🛒 Add to Cart'}
+                <TouchableOpacity
+                    style={{
+                        flex: 1,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        backgroundColor: '#4CAF50',
+                        borderRadius: 5,
+                        padding: 10,
+                    }}
                     onPress={handleAddProductToCart}
-                    disabled={loading}
+                >
+                    <FontAwesome
+                        name="cart-plus"
+                        size={24}
+                        color="white"
+                        style={{ marginRight: 10 }}
+                    />
+                    <Text style={{ color: 'white', fontSize: 18 }}>
+                        {loading ? '️Adding to Cart...' : 'Add to Cart'}
+                    </Text>
+                </TouchableOpacity>
 
-                />
+                <TouchableOpacity
+                    style={{
+                        marginLeft: 10,
+                        backgroundColor: '#2196F3',
+                        borderRadius: 5,
+                        padding: 10,
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                    }}
+                    onPress={handleAddToFavorites}
+                >
+                    <FontAwesome name="heart" size={24} color="white" />
+                </TouchableOpacity>
             </View>
         </SafeAreaView>
     );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        paddingHorizontal: 10,
+    },
+    productName: {
+        fontSize: 30,
+        fontWeight: 'bold',
+        textAlign: 'left',
+    },
+    productPrice: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
+    product_title: {
+        fontSize: 24,
+        fontWeight: 'bold',
+        paddingHorizontal: 10,
+    },
+    product_desc: {
+        fontSize: 16,
+        textAlign: 'left',
+        paddingHorizontal: 10,
+    },
+    colorThumbnail: {
+        borderWidth: 2,
+        borderRadius: 20,
+        margin: 5,
+        padding: 5,
+    },
+    colorImage: {
+        width: 40,
+        height: 40,
+        borderRadius: 20,
+    },
+    sizeButton: {
+        borderWidth: 1,
+        borderRadius: 8,
+        margin: 5,
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+    },
+    sizeButtonText: {
+        fontSize: 16,
+    },
+});
 
 export default ProductDetail;
