@@ -9,7 +9,7 @@ import SearchItem from '../components/SearchItem';
 import ProductCard from '../components/ProductCard';
 import CategoryButton from '../components/CategoryButton';
 import AppLoading from '../components/AppLoading'
-import { fetchProductsFromServer, fetchCategories, fetchUser} from '../services'
+import { fetchProductsFromServer, fetchCategories, fetchUser } from '../services'
 import { sliderImages } from '../data'
 
 function Home({ navigation }) {

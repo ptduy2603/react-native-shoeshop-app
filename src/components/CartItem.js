@@ -98,7 +98,7 @@ const styles = StyleSheet.create({
         marginTop: 10,
     },
     productImage: {
-        width: 120,
+        width: 140,
         height: '100%',
         objectFit: 'cover',
     },

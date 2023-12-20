@@ -146,7 +146,7 @@ function Cart({ navigation }) {
                                 </View>
                                 <Pressable 
                                     style={styles.checkoutBtn}
-                                    onPress={() => navigation.navigate('Payment', { totalPrice })}
+                                    onPress={() => navigation.navigate('Payment', { totalPrice, products : cartProducts })}
                                 >
                                     <Text style={{ fontSize : 18, fontWeight : '800', color : '#fff' }}>Check out</Text>
                                 </Pressable>
@@ -187,7 +187,7 @@ function Cart({ navigation }) {
 
 const styles = StyleSheet.create({
     container : {
-        backgroundColor : 'rgba(0,0,0,0.01)',
+        backgroundColor : '#fff',
         flex : 1,
     },
     productList : {

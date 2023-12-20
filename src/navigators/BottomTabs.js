@@ -13,6 +13,7 @@ const Tab = createBottomTabNavigator()
 
 function BottomTabs () {
     const cartItemQuantity = useSelector(state => state.cartReducer.cart.length)
+    const favouriteQuantity = useSelector(state => state.favorReducer.favorites.length)
 
     return (
         <Tab.Navigator
@@ -52,7 +53,10 @@ function BottomTabs () {
                     tabBarIcon: ({ focused }) => {
                         return <FontAwesome name={focused ? 'heart' : 'heart-o'} size={22} color={focused ? GlobalStyles.primaryColor : '#000'} />
                     },
-                    tabBarBadge: 3, // temporary hard code
+                    tabBarBadge: favouriteQuantity, 
+                    tabBarBadgeStyle : {
+                        display : favouriteQuantity ? 'flex' : 'none'
+                    }
                 }}
             />
             <Tab.Screen 

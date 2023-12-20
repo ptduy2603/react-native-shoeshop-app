@@ -11,3 +11,16 @@ export const paymentSteps = [
     { title : 'Payment', content : "Payment Details" },
     { title : 'Place Order', content : "Order Summary" },
 ]
+
+export const paymentMethods = [
+    {
+        id : "1",
+        type : "cash",
+        title : "Cash on delivery"
+    },
+    {
+        id : "2",
+        type : "card",
+        title : "Credit payment"
+    }
+]

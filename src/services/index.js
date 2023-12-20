@@ -86,3 +86,13 @@ export const fetchCategories = () => {
    return axios.get(`${baseUrl}/categories`)
 }
 
+//Favourites API
+//get user's favourite products
+export const fetchUserFavourites = (token) => {
+   return axios.get(`${baseUrl}/users/favourites/${token}`)
+}
+// update user's favourite products
+export const updateUserFavouriteProducts = (token, products) => {
+   return axios.patch(`${baseUrl}/update-favourites`, { token, products })
+}
+

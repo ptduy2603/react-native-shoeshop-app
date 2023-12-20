@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useDispatch } from 'react-redux';
 
 import { validEmailRegex } from '../constants'
-import { loginApp, fetchCart } from '../services';
+import { loginApp, fetchCart, fetchUserFavourites } from '../services';
 import useValidate from '../hooks/useValidate';
 import GlobalStyles from '../untils/GlobalStyles';
 import FormContainer from '../components/FormContainer';
@@ -16,7 +16,7 @@ import CustomButton from '../components/CustomButton';
 import NavigateQuestion from '../components/NavigateQuestion';
 import Apploading from '../components/AppLoading'
 import SocialsLogin from '../components/SocialsLogin';
-import { setCurrentUserAction, setCartAction } from '../redux/actions'
+import { setCurrentUserAction, setCartAction, addToFavoritesAction } from '../redux/actions'
 
 function Login({ navigation }) {
     // states
@@ -37,6 +37,9 @@ function Login({ navigation }) {
                     dispatch(setCurrentUserAction(userToken))
                     fetchCart(userToken)
                         .then(res => dispatch(setCartAction(res.data.products)))
+                        .catch(err => console.error(err))
+                    fetchUserFavourites(userToken)
+                        .then(res => dispatch(addToFavoritesAction(res.data.products)))
                         .catch(err => console.error(err))
                 }
             }
@@ -90,6 +93,9 @@ function Login({ navigation }) {
                         fetchCart(response.data.token)
                             .then(res => dispatch(setCartAction(res.data.products)))
                             .catch(err => console.log(err))
+                        fetchUserFavourites(userToken)
+                            .then(res => dispatch(addToFavoritesAction(res.data.products)))
+                            .catch(err => console.error(err))
                     })
                     .catch(error => {        
                         console.log(error)                
