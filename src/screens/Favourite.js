@@ -9,7 +9,7 @@ import GlobalStyles from '../untils/GlobalStyles';
 
 function Favourite({ navigation }) {
     const favourites = useSelector((state) => state.favorReducer.favorites);
-    console.log(favourites)
+    // console.log(favourites)
     const [isLoading, setIsLoading] = useState(true);
     const dispatch = useDispatch();
 
@@ -48,6 +48,8 @@ const styles = StyleSheet.create({
         flex: 1,
         width: Dimensions.get('window').width,
         backgroundColor: '#fff',
+        marginTop: 0,
+        paddingHorizontal: 10,
     },
     favorSectionWrapper: {
         width: '100%',

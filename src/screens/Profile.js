@@ -8,6 +8,7 @@ import AppLoading from '../components/AppLoading';
 import OptionTag from '../components/OptionTag';
 import { fetchUser } from '../services'
 import { useEffect, useState } from 'react';
+import { setCurrentUserAction } from '../redux/actions';
 
 function Profile({ navigation }) {
     const token = useSelector(state => state.authReducer.userToken)

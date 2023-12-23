@@ -16,6 +16,7 @@ import { addProductToCart, updateUserFavouriteProducts } from '../services';
 import GlobalStyles from '../untils/GlobalStyles';
 import formatCurrency from '../untils/formatCurrency';
 import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import FlashMessage, { showMessage } from 'react-native-flash-message';
 
 function ProductDetail({ navigation, route }) {
     const { product } = route.params;
@@ -41,7 +42,6 @@ function ProductDetail({ navigation, route }) {
             }
         }
         console.log('Check liked product')
-        console.log(favourites)
     }, [])
 
 
@@ -108,8 +108,18 @@ function ProductDetail({ navigation, route }) {
         updateUserFavouriteProducts(token, likedProduct) 
             .then(response => {
               dispatch(addToFavoritesAction(response.data.products))
+              showMessage({
+                message: isLiked ? 'Removed from favorites' : 'Added to favorites',
+                type: 'success',
+            });
             })
-            .catch(err => console.error(err))
+            .catch(err => {
+                console.error(err);
+                showMessage({
+                    message: 'Error updating favorites',
+                    type: 'danger',
+                });
+            });
     };
 
 
@@ -241,6 +251,7 @@ function ProductDetail({ navigation, route }) {
                     </Text>
                 </TouchableOpacity>
             </View>
+            <FlashMessage position="top" />
         </SafeAreaView>
     );
 }
