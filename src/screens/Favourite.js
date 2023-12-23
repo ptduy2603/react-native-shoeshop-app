@@ -1,9 +1,9 @@
 import { View, Text, StyleSheet, SafeAreaView, FlatList, Dimensions } from 'react-native';
-import { addToFavoritesAction } from '../redux/actions';
-import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import AppLoading from '../components/AppLoading';
 import { useSelector, useDispatch } from 'react-redux';
 
+import { addToFavoritesAction } from '../redux/actions';
 import { fetchUserFavourites } from '../services'
 import ProductCard from '../components/ProductCard';
 import GlobalStyles from '../untils/GlobalStyles';
@@ -68,6 +68,8 @@ const styles = StyleSheet.create({
         flex: 1,
         width: Dimensions.get('window').width,
         backgroundColor: '#fff',
+        marginTop: 0,
+        paddingHorizontal: 10,
     },
     favorSectionWrapper: {
         width: '100%',

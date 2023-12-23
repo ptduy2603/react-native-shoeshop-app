@@ -22,6 +22,9 @@ import formatCurrency from '../untils/formatCurrency';
 import { fetchUser } from '../services'
 import CommentBox from '../components/CommentBox';
 
+import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import FlashMessage, { showMessage } from 'react-native-flash-message';
+
 function ProductDetail({ navigation, route }) {
     const { product } = route.params;
     const token = useSelector((state) => state.authReducer.userToken);
@@ -33,23 +36,40 @@ function ProductDetail({ navigation, route }) {
 
     const [size, setSize] = useState(
         product.sizes && product.sizes.length > 0 ? product.sizes[0] : null
-    );
+        );
     const [selectedColor, setSelectedColor] = useState(
-        product.colors && product.colors.length > 0 ? product.colors[0] : null
+    product.colors && product.colors.length > 0 ? product.colors[0] : null
     );
     const [loading, setLoading] = useState(false);  
     const [user, setUser] = useState({})
     const [commentInput, setCommentInput] = useState('')
     const [comments, setComments] = useState([])
-
+    
     const products = useSelector(state => state.productReducer.products)
-
+            
     useLayoutEffect(() => {
         navigation.setOptions({
             headerTitle: product.name,
         });
     }, [navigation, product]);
 
+    useEffect(() => {
+        if(!favourites.length)
+            setIsLiked(false)
+        else {
+            isLikedProduct = favourites.find(
+                (favorProduct) => favorProduct._id.toString() === product._id.toString()
+            )
+    
+            if(isLikedProduct) {
+                setIsLiked(true)
+            } else {
+                setIsLiked(false)
+            }
+        }
+        console.log('Check liked product')
+    }, [])
+            
     useEffect(() => {
         if (!favourites.length) setIsLiked(false);
         else {
@@ -140,6 +160,7 @@ function ProductDetail({ navigation, route }) {
                 dispatch(addToFavoritesAction(response.data.products));
             })
             .catch((err) => console.error(err));
+
     };
 
 
@@ -339,6 +360,7 @@ function ProductDetail({ navigation, route }) {
                     </Text>
                 </TouchableOpacity>
             </View>
+            <FlashMessage position="top" />
         </SafeAreaView>
     );
 }
