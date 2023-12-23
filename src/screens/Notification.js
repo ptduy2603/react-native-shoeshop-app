@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView } from 'react-native';
+import { useState, useEffect } from 'react';
+import { View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+
 import GlobalStyles from '../untils/GlobalStyles';
 import NotiCard from '../components/NotiCard';
-
 
 const Notification = () => {
     const [notiCount, setNotiCount] = useState(0);
