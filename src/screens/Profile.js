@@ -60,6 +60,7 @@ function Profile({ navigation }) {
                                         icon={<FontAwesome5 name='money-bill' color={GlobalStyles.primaryColor} size={24}/>}
                                         isPrimaryTag
                                         isShowMore
+                                        handleOnPress={() => navigation.navigate('Order')}
                                     />
                     
                                     <OptionTag 

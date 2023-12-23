@@ -2,10 +2,11 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Ionicons, FontAwesome } from '@expo/vector-icons';
 import { useSelector } from 'react-redux';
 import { useNavigation } from '@react-navigation/native';
+
 import Home from '../screens/Home';
 import Cart from '../screens/Cart';
 import Favourite from '../screens/Favourite';
-import Profile from '../screens/Profile';
+import ProfileNavigator from './ProfileNavigator';
 import Notification from '../screens/Notification';
 import GlobalStyles from '../untils/GlobalStyles';
 
@@ -114,7 +115,7 @@ function BottomTabs() {
       />
             <Tab.Screen
                 name="profile"
-                component={Profile}
+                component={ProfileNavigator}
                 options={{
                     tabBarLabel: 'Profile',
                     headerShown: false,

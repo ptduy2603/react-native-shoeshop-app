@@ -24,3 +24,21 @@ export const paymentMethods = [
         title : "Credit payment"
     }
 ]
+
+export const orderTypes = [
+    {
+        id : '1',
+        type : 'pendding',
+        title : 'Chờ xác nhận',
+    },
+    {
+        id : '2',
+        type : 'shipping',
+        title : 'Chờ giao hàng',
+    },
+    {
+        id : '3',
+        type : 'received',
+        title : 'Đã nhận hàng'
+    },
+]

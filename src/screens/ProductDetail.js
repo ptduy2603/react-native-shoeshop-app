@@ -22,9 +22,6 @@ import formatCurrency from '../untils/formatCurrency';
 import { fetchUser } from '../services'
 import CommentBox from '../components/CommentBox';
 
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
-import FlashMessage, { showMessage } from 'react-native-flash-message';
-
 function ProductDetail({ navigation, route }) {
     const { product } = route.params;
     const token = useSelector((state) => state.authReducer.userToken);
@@ -360,7 +357,6 @@ function ProductDetail({ navigation, route }) {
                     </Text>
                 </TouchableOpacity>
             </View>
-            <FlashMessage position="top" />
         </SafeAreaView>
     );
 }

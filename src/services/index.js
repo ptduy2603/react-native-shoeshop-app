@@ -108,6 +108,6 @@ export const placeOrder = (token, products, shippingAddress, totalPrice, payment
 }
 
 // fetch user's orders
-export const fetchUserOder = (token) => {
+export const fetchUserOrders = (token) => {
    return axios.get(`${baseUrl}/payments/${token}`)
 }
