@@ -7,6 +7,15 @@ export const setCurrentUserAction = (token) => {
     };
 };
 
+// Products actions
+export const SET_PRODUCTS = 'SET_PRODUCTS'
+export const setProductsAction = (products) => {
+    return {
+        type : SET_PRODUCTS,
+        payload : products
+    }
+}
+
 //cart actions
 export const SET_CART_DATA = 'SET_CART_DATA';
 export const setCartAction = (products) => {

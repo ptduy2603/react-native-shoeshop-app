@@ -6,7 +6,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useDispatch } from 'react-redux';
 
 import { validEmailRegex } from '../constants'
-import { loginApp, fetchCart, fetchUserFavourites } from '../services';
+import { loginApp, fetchCart, fetchUserFavourites, fetchProductsFromServer } from '../services';
 import useValidate from '../hooks/useValidate';
 import GlobalStyles from '../untils/GlobalStyles';
 import FormContainer from '../components/FormContainer';
@@ -16,7 +16,7 @@ import CustomButton from '../components/CustomButton';
 import NavigateQuestion from '../components/NavigateQuestion';
 import Apploading from '../components/AppLoading'
 import SocialsLogin from '../components/SocialsLogin';
-import { setCurrentUserAction, setCartAction, addToFavoritesAction } from '../redux/actions'
+import { setCurrentUserAction, setCartAction, addToFavoritesAction, setProductsAction } from '../redux/actions'
 
 function Login({ navigation }) {
     // states
@@ -35,6 +35,9 @@ function Login({ navigation }) {
                 // if user logined then navigate to main bottom tab
                 if(userToken) {
                     dispatch(setCurrentUserAction(userToken))
+                    fetchProductsFromServer()
+                        .then(res => dispatch(setProductsAction(res.data.products)))
+                        .catch(err => console.error(err))
                     fetchCart(userToken)
                         .then(res => dispatch(setCartAction(res.data.products)))
                         .catch(err => console.error(err))
@@ -90,6 +93,9 @@ function Login({ navigation }) {
                         
                         // navigate to MainBottom tabs by set authState in redux store
                         dispatch(setCurrentUserAction(response.data.token))
+                        fetchProductsFromServer()
+                                .then(res => dispatch(setProductsAction(res.data.products)))
+                                .catch(err => console.error(err))
                         fetchCart(response.data.token)
                             .then(res => dispatch(setCartAction(res.data.products)))
                             .catch(err => console.log(err))

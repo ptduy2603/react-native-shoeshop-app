@@ -20,6 +20,7 @@ function Cart({ navigation }) {
     const cart = useSelector(state => state.cartReducer.cart)
     const token = useSelector(state => state.authReducer.userToken)
     const dispatch = useDispatch()
+    const sectionProducts = useSelector(state => state.productReducer.products)
     
     useEffect(() => {
         fetchProductsFromServer()
@@ -58,7 +59,7 @@ function Cart({ navigation }) {
         setCartProducts(userCart)
         handleCalculateTotalPrice(userCart)
         console.log("Fetch user's cart")
-    }, [cart])
+    }, [cart, products])
 
     
     //handler functions 

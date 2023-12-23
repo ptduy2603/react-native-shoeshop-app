@@ -19,29 +19,27 @@ function Home({ navigation }) {
     const [isLoading, setIsLoading] = useState(true)
     const [currentCategory, setCurrentCategory] = useState('all')
     const token = useSelector((state) => state.authReducer.userToken);
+    const sectionProducts = useSelector(state => state.productReducer.products)
 
     useEffect(() => {
         fetchCategories()
             .then(response => {
                 const categories = response.data.categories
-                fetchProductsFromServer()
-                    .then(response => {
-                        let products = response.data.products
-                        products.forEach(productSection => {
-                            categories.forEach(category => {
-                                if(category.type === productSection.title)
-                                    productSection.title = category.title
-                            })
-                        })
-                        setProducts(products)
-                        setCategories(categories)
-                        setIsLoading(false)
+                let products = sectionProducts
+                products.forEach(productSection => {
+                    categories.forEach(category => {
+                        if(category.type === productSection.title)
+                            productSection.title = category.title
                     })
-                    .catch(err => console.error(err))
+                })
+                setCategories(categories)
+                setProducts(products)
+                if(products.length)
+                    setIsLoading(false)
                 console.log('Fetch products and categories')
             })
             .catch(error => console.error(error))
-    }, [])
+    },[sectionProducts])
 
     useEffect(() => {
         fetchUser(token)

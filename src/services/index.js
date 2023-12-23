@@ -64,6 +64,11 @@ export const fetchProductsFromServer = () => {
    return axios.get(`${baseUrl}/products`)
 }
 
+// Comment for product 
+export const createComment = (productId, comment) => {
+   return axios.put(`${baseUrl}/products/comment`, { productId, comment })
+}
+
 // CART APIs
 // Add product to cart 
 export const addProductToCart = (token, product) => {
@@ -100,4 +105,9 @@ export const updateUserFavouriteProducts = (token, products) => {
 // place an order
 export const placeOrder = (token, products, shippingAddress, totalPrice, paymentMethod) => {
    return axios.post(`${baseUrl}/payments/order`, { token, products, shippingAddress, totalPrice, paymentMethod })
+}
+
+// fetch user's orders
+export const fetchUserOder = (token) => {
+   return axios.get(`${baseUrl}/payments/${token}`)
 }

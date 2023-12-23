@@ -1,4 +1,4 @@
-import React, { useState, useLayoutEffect, useEffect } from 'react';
+import React, { useState, useLayoutEffect, useEffect, useCallback } from 'react';
 import {
     Text,
     SafeAreaView,
@@ -9,13 +9,18 @@ import {
     StyleSheet,
     TouchableOpacity,
     Share,
+    TextInput,
 } from 'react-native';
 import { useDispatch, useSelector } from 'react-redux';
-import { setCartAction, addToFavoritesAction } from '../redux/actions';
-import { addProductToCart, updateUserFavouriteProducts } from '../services';
+import { FontAwesome, Ionicons, Feather} from '@expo/vector-icons';
+import Toast from 'react-native-root-toast'
+
+import { setCartAction, addToFavoritesAction, setProductsAction } from '../redux/actions';
+import { addProductToCart, updateUserFavouriteProducts, createComment } from '../services';
 import GlobalStyles from '../untils/GlobalStyles';
 import formatCurrency from '../untils/formatCurrency';
-import { FontAwesome, Ionicons } from '@expo/vector-icons';
+import { fetchUser } from '../services'
+import CommentBox from '../components/CommentBox';
 
 function ProductDetail({ navigation, route }) {
     const { product } = route.params;
@@ -24,36 +29,53 @@ function ProductDetail({ navigation, route }) {
     const favourites = useSelector((state) => state.favorReducer.favorites);
     const dispatch = useDispatch();
 
-    const [isLiked, setIsLiked] = useState();
-
-    useEffect(() => {
-        if(!favourites.length)
-            setIsLiked(false)
-        else {
-            isLikedProduct = favourites.find(
-                (favorProduct) => favorProduct._id.toString() === product._id.toString()
-            )
-    
-            if(isLikedProduct) {
-                setIsLiked(true)
-            } else {
-                setIsLiked(false)
-            }
-        }
-        console.log('Check liked product')
-        console.log(favourites)
-    }, [])
-
+    const [isLiked, setIsLiked] = useState(false);
 
     const [size, setSize] = useState(
-        product.sizes && product.sizes.length > 0 ? product.sizes[0].toString() : null
+        product.sizes && product.sizes.length > 0 ? product.sizes[0] : null
     );
-
     const [selectedColor, setSelectedColor] = useState(
         product.colors && product.colors.length > 0 ? product.colors[0] : null
     );
+    const [loading, setLoading] = useState(false);  
+    const [user, setUser] = useState({})
+    const [commentInput, setCommentInput] = useState('')
+    const [comments, setComments] = useState([])
 
-    const [loading, setLoading] = useState(false);
+    const products = useSelector(state => state.productReducer.products)
+
+    useLayoutEffect(() => {
+        navigation.setOptions({
+            headerTitle: product.name,
+        });
+    }, [navigation, product]);
+
+    useEffect(() => {
+        if (!favourites.length) setIsLiked(false);
+        else {
+            isLikedProduct = favourites.find(
+                (favorProduct) => favorProduct._id.toString() === product._id.toString()
+            );
+
+            if (isLikedProduct) {
+                setIsLiked(true);
+            } else {
+                setIsLiked(false);
+            }
+        }
+        console.log('Check liked product');
+    }, []);
+
+    useEffect(() => {
+        fetchUser(token)
+            .then(response => setUser(response.data.user))
+            .catch(error => console.error(error))
+        console.log('Fetch user info')
+    }, [])
+
+    useEffect(() => {
+        setComments(product.comments || [])
+    }, [product])
 
     const handleAddProductToCart = () => {
         const existsProduct = cart.find(
@@ -72,7 +94,7 @@ function ProductDetail({ navigation, route }) {
             productId: product._id,
             quantity: 1,
             size,
-            color: { name : selectedColor.color, image : selectedColor.image },
+            color: { name: selectedColor.color, image: selectedColor.image },
         };
 
         const newCart = [...cart, selectedProduct];
@@ -94,32 +116,34 @@ function ProductDetail({ navigation, route }) {
     };
 
     const handleAddToFavorites = () => {
-        let likedProduct = []
-        if(isLiked) {
-          likedProduct = favourites.filter((favorProduct) => favorProduct._id.toString() !== product._id.toString())
-          likedProduct = likedProduct.map((favorProduct) => favorProduct._id)
+        let likedProducts = [];
+        Toast.show(isLiked ? 'Xóa sản phẩm khỏi mục yêu thích' : 'Thêm sản phẩm vào mục yêu thích', {
+            duration: 1000,
+            position: Toast.positions.BOTTOM,
+            shadow: true,
+            animation: true,
+            backgroundColor : 'rgba(0,0,0,0.9)'
+        })
+        if (isLiked) {
+            likedProducts = favourites.filter(
+                (favorProduct) => favorProduct._id.toString() !== product._id.toString()
+            );
+            likedProducts = likedProducts.map((favorProduct) => favorProduct._id);
+        } else {
+            likedProducts = favourites.map((favorProduct) => favorProduct._id);
+            likedProducts.push(product._id);
         }
-        else {
-            likedProduct = favourites.map((favorProduct) => favorProduct._id)
-            likedProduct.push(product._id)
-        }
-        setIsLiked(!isLiked)
+        setIsLiked(!isLiked);
 
-        updateUserFavouriteProducts(token, likedProduct) 
-            .then(response => {
-              dispatch(addToFavoritesAction(response.data.products))
+        updateUserFavouriteProducts(token, likedProducts)
+            .then((response) => {
+                dispatch(addToFavoritesAction(response.data.products));
             })
-            .catch(err => console.error(err))
+            .catch((err) => console.error(err));
     };
 
 
-    useLayoutEffect(() => {
-        navigation.setOptions({
-            headerTitle: product.name,
-        });
-    }, [navigation, product]);
-
-    const ShareProduct = async () => {
+    const handleShareProduct = async () => {
         const ShareOptions = {
             message: 'Hãy mua sản phẩm nha mọi người',
             url: product.image,
@@ -133,7 +157,38 @@ function ProductDetail({ navigation, route }) {
         }
     };
 
-    const renderColorOptions = () => {
+    const handleComment = useCallback(async () => {
+        if(!commentInput.trim())
+            return
+        const comment = {
+            name : user.username || 'Anonymous',
+            text : commentInput,            
+        }
+
+        createComment(product._id, comment)
+            .then(res => {
+                setComments(res.data.comments)
+                setCommentInput('')
+                const newProducts = products
+                products.forEach(section => {
+                    section.data.forEach(item => {
+                        if(item._id.toString() === product._id.toString())
+                        {
+                            if(item.comments)
+                            {
+                                item.comments.unshift(comment)
+                            }
+                            else
+                                item.comments = [comment]
+                        }
+                    })
+                })
+                dispatch(setProductsAction(newProducts))
+            })
+            .catch(error => console.error(error))
+    }, [commentInput, comments, product])
+
+    const renderColorOptions = useCallback(() => {
         return (
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {product.colors.map((colorOption, index) => (
@@ -145,7 +200,7 @@ function ProductDetail({ navigation, route }) {
                             {
                                 borderColor:
                                     selectedColor && selectedColor.color === colorOption.color
-                                        ? 'blue'
+                                        ? GlobalStyles.primaryColor
                                         : 'transparent',
                             },
                         ]}
@@ -155,20 +210,20 @@ function ProductDetail({ navigation, route }) {
                 ))}
             </ScrollView>
         );
-    };
+    }, [product, selectedColor]);
 
-    const renderSizeOptions = () => {
+    const renderSizeOptions = useCallback(() => {
         return (
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
                 {product.sizes.map((sizeOption, index) => (
                     <TouchableOpacity
                         key={index}
-                        onPress={() => setSize(sizeOption.toString())}
+                        onPress={() => setSize(sizeOption)}
                         style={[
                             styles.sizeButton,
                             {
                                 backgroundColor:
-                                    size && size === sizeOption.toString()
+                                    size && size === sizeOption
                                         ? GlobalStyles.primaryColor
                                         : 'transparent',
                             },
@@ -179,11 +234,11 @@ function ProductDetail({ navigation, route }) {
                                 styles.sizeButtonText,
                                 {
                                     color:
-                                        size && size === sizeOption.toString()
+                                        size && size === sizeOption
                                             ? 'white'
-                                            : '#00bcd4',
+                                            : GlobalStyles.primaryColor,
                                     fontWeight:
-                                        size && size === sizeOption.toString() ? 'bold' : 'normal',
+                                        size && size === sizeOption ? 'bold' : 'normal',
                                 },
                             ]}
                         >
@@ -193,11 +248,14 @@ function ProductDetail({ navigation, route }) {
                 ))}
             </ScrollView>
         );
-    };
+    }, [product, size]);
 
     return (
         <SafeAreaView style={styles.container}>
-            <ScrollView showsVerticalScrollIndicator={false} style={{ flex: 1, marginBottom: 30, paddingHorizontal: 10, }}>
+            <ScrollView
+                showsVerticalScrollIndicator={false}
+                style={{ flex: 1, marginBottom: 30, paddingHorizontal: 10 }}
+            >
                 <Image
                     source={{ uri: selectedColor?.image }}
                     style={{ width: '100%', height: 350, borderBottomWidth: 1, borderRadius: 10 }}
@@ -206,30 +264,58 @@ function ProductDetail({ navigation, route }) {
                 <View style={styles.showPrice}>
                     <Text style={styles.productPrice}>Giá: {formatCurrency(product.price)}VNĐ</Text>
 
-                    <View style={styles.option}>
+                    <View style={styles.options}>
                         <TouchableOpacity
-                            style={styles.button_option}
                             onPress={handleAddToFavorites}
                         >
-                            <FontAwesome name="heart" size={24} color= {isLiked ? "red" : "white"} />
+                            {
+                                !isLiked ? <FontAwesome name='heart-o' size={30} color="black" /> : <FontAwesome name='heart' size={30} color='red' />
+                            }
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={styles.button_option} onPress={ShareProduct}>
-                            <Ionicons name="share-social-outline" size={24} color="white" />
+                        <TouchableOpacity  
+                            onPress={handleShareProduct}
+                        >
+                            <Ionicons name="share-social-outline" size={30} color="black" />
                         </TouchableOpacity>
                     </View>
                 </View>
                 {renderColorOptions()}
                 {renderSizeOptions()}
-                <Text style={styles.product_title}>Mô tả sản phẩm: </Text>
-                <Text style={styles.product_desc}>{product.desc}</Text>
+                <View>
+                    <Text style={styles.product_title}>Mô tả sản phẩm: </Text>
+                    <Text style={styles.product_desc}>{product.desc}</Text>
+                </View>
+                <View style={styles.commentContainer}>
+                      <Text style={styles.product_title}>{`Đánh giá sản phẩm (${comments?.length || 0})`}</Text>  
+                      <View style={styles.commentWrapper}>
+                           <View style={styles.commentInputContainer}>
+                                <TextInput 
+                                    multiline
+                                    spellCheck={false}
+                                    value={commentInput}
+                                    style={styles.commentInput}
+                                    placeholder='Enter your comment...'
+                                    onChangeText={(value) => setCommentInput(value)}
+                                />
+                                <TouchableOpacity
+                                    activeOpacity={0.8}
+                                    onPress={handleComment}
+                                >
+                                    <Feather name='send' color='rgba(0,0,0,0.6)' size={30} />
+                                </TouchableOpacity>
+                           </View>
+                           {
+                                comments.map((comment, index) => (
+                                    <CommentBox key={index} comment={comment} />
+                                ))
+                           }
+                      </View>
+                </View>
             </ScrollView>
 
             <View style={styles.showCart}>
-                <TouchableOpacity
-                    style={styles.button_cart}
-                    onPress={handleAddProductToCart}
-                >
+                <TouchableOpacity style={styles.button_cart} onPress={handleAddProductToCart}>
                     <FontAwesome
                         name="cart-plus"
                         size={24}
@@ -240,6 +326,18 @@ function ProductDetail({ navigation, route }) {
                         {loading ? '️Adding to Cart...' : 'Add to Cart'}
                     </Text>
                 </TouchableOpacity>
+
+                <TouchableOpacity style={styles.button_cart} onPress={() => {}}>
+                    <FontAwesome
+                        name="credit-card"
+                        size={24}
+                        color="white"
+                        style={{ marginRight: 10 }}
+                    />
+                    <Text style={{ color: 'white', fontSize: 18 }}>
+                        By now
+                    </Text>
+                </TouchableOpacity>
             </View>
         </SafeAreaView>
     );
@@ -248,27 +346,26 @@ function ProductDetail({ navigation, route }) {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#fff',
     },
     productName: {
-        fontSize: 30,
+        marginVertical : 10,
+        fontSize: 28,
         fontWeight: 'bold',
         textAlign: 'left',
     },
     productPrice: {
-        fontSize: 24,
-        fontWeight: 'bold',
+        fontSize: 22,
+        fontWeight: '600',
         textAlign: 'center',
     },
     product_title: {
         fontSize: 24,
         fontWeight: 'bold',
-        paddingHorizontal: 10,
     },
     product_desc: {
         fontSize: 18,
         textAlign: 'justify',
-        paddingHorizontal: 10,
-        marginBottom: 40,
     },
     colorThumbnail: {
         borderWidth: 2,
@@ -286,6 +383,7 @@ const styles = StyleSheet.create({
     },
     sizeButton: {
         borderWidth: 1,
+        borderColor : 'rgba(0,0,0,0.2)',
         borderRadius: 8,
         margin: 5,
         paddingVertical: 8,
@@ -305,20 +403,22 @@ const styles = StyleSheet.create({
         marginVertical: 10,
     },
     showCart: {
+        flexDirection: 'row',
         position: 'absolute',
+        gap : 10,
         bottom: 0,
         width: '100%',
         backgroundColor: 'white',
         borderTopWidth: 1,
         borderColor: '#ccc',
-        flexDirection: 'row',
         justifyContent: 'space-between',
         padding: 10,
     },
-    option: {
+    options: {
         flexDirection: 'row',
         alignItems: 'right',
         justifyContent: 'space-between',
+        gap : 10,
     },
     button_option: {
         marginLeft: 10,
@@ -336,6 +436,26 @@ const styles = StyleSheet.create({
         backgroundColor: GlobalStyles.primaryColor,
         borderRadius: 5,
         padding: 10,
+    },
+    commentContainer : {
+        marginBottom : 40,
+    },
+    commentInputContainer : {
+        marginVertical : 10,
+        flexDirection : 'row',
+        width : '100%',
+        alignItems : 'center',
+        justifyContent : 'center',
+        borderWidth : 1,
+        borderRadius : 4,
+        borderColor : 'rgba(0,0,0,0.3)',
+        paddingHorizontal : 10,
+    },
+    commentInput : {
+        flex : 1,
+        height : '100%',
+        fontSize : 16,      
+        padding : 16,
     },
 });
 

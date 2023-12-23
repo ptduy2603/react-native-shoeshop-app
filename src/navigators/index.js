@@ -5,7 +5,7 @@ import AuthStack from "./AuthStack"
 import Main from "./Main"
 
 function Navigators() {
-    // check if isAuthentication then render MainBottom , else render AuthStack
+    // check if token is exists then render MainBottom , else render AuthStack
     const token = useSelector(state =>  state.authReducer.userToken)
     
     return (
