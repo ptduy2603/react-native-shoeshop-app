@@ -15,7 +15,7 @@ const Tab = createBottomTabNavigator();
 function BottomTabs() {
     const cartItemQuantity = useSelector((state) => state.cartReducer.cart.length);
     const favouriteQuantity = useSelector((state) => state.favorReducer.favorites.length);
-    const navigation = useNavigation();
+    const notiCount = useSelector((state) => state.notifications.notifications.length);
 
     return (
         <Tab.Navigator
@@ -98,21 +98,21 @@ function BottomTabs() {
                 }}
             />
             <Tab.Screen
-        name='notification'
-        component={Notification}
-        options={({ route }) => ({
-          tabBarLabel: 'Notifications',
-          headerShown: false,
-          tabBarIcon: ({ focused }) => (
-            <Ionicons
-              name={focused ? 'notifications' : 'notifications-outline'}
-              size={26}
-              color={focused ? GlobalStyles.primaryColor : '#000'}
+                name="notification"
+                component={Notification}
+                options={({ route }) => ({
+                    tabBarLabel: 'Notifications',
+                    headerShown: false,
+                    tabBarIcon: ({ focused }) => (
+                        <Ionicons
+                            name={focused ? 'notifications' : 'notifications-outline'}
+                            size={26}
+                            color={focused ? GlobalStyles.primaryColor : '#000'}
+                        />
+                    ),
+                    tabBarBadge: notiCount > 0 ? notiCount : null,
+                })}
             />
-          ),
-          tabBarBadge: route.params ? route.params.notiCount : 0,
-        })}
-      />
             <Tab.Screen
                 name="profile"
                 component={ProfileNavigator}
