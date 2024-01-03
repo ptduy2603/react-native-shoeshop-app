@@ -75,7 +75,8 @@ function Home({ navigation }) {
                                     : require('../../assets/images/default_avatar.png')
                             }
                         />
-                    </Pressable>
+                    </Pressable>   
+
                     <View style={styles.greetingUser}>
                         <Text style={styles.hiMember}>Hi, {user.username}!</Text>
                         <Text style={styles.subTitle}>Let choose your suitable shoes</Text>
@@ -119,11 +120,6 @@ function Home({ navigation }) {
                 />
             </>
         );
-    };
-
-    const handleRenderFooter = () => {
-        // code in this function will be render after data in FlatList
-        // use for paging
     };
 
     const handleRenderProduct = (data) => {
