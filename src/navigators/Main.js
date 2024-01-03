@@ -5,6 +5,7 @@ import BottomTabs from './BottomTabs';
 import AccountDetial from '../screens/AccountDetail';
 import AdjustPassword from '../screens/AdjustPassword';
 import Payment from '../screens/Payment';
+import RelatedProducts from '../screens/RelatedProducts';
 
 const Stack = createStackNavigator();
 
@@ -19,6 +20,13 @@ function Main() {
                 options={{
                     headerShown: false,
                 }}
+            />
+            <Stack.Screen
+                name="RelatedProducts"
+                options={{
+                    headerTitle: 'Related Products',
+                }}
+                component={RelatedProducts}
             />
             <Stack.Screen
                 name="productDetail"

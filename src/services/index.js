@@ -69,6 +69,12 @@ export const createComment = (productId, comment) => {
    return axios.put(`${baseUrl}/products/comment`, { productId, comment })
 }
 
+// Add this new API for searching related products
+export const searchRelatedProducts = (query) => {
+   return axios.get(`${baseUrl}/products/search?query=${query}`);
+}
+
+
 // CART APIs
 // Add product to cart 
 export const addProductToCart = (token, product) => {

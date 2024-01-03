@@ -1,5 +1,15 @@
 'use strict';
-import { ScrollView, Image, View, Text, SafeAreaView, StyleSheet, FlatList, Pressable, Dimensions } from 'react-native';
+import {
+    ScrollView,
+    Image,
+    View,
+    Text,
+    SafeAreaView,
+    StyleSheet,
+    FlatList,
+    Pressable,
+    Dimensions,
+} from 'react-native';
 import { useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import Carousel from 'react-native-reanimated-carousel';
@@ -8,47 +18,46 @@ import GlobalStyles from '../untils/GlobalStyles';
 import SearchItem from '../components/SearchItem';
 import ProductCard from '../components/ProductCard';
 import CategoryButton from '../components/CategoryButton';
-import AppLoading from '../components/AppLoading'
-import { fetchProductsFromServer, fetchCategories, fetchUser } from '../services'
-import { sliderImages } from '../data'
+import AppLoading from '../components/AppLoading';
+import { fetchProductsFromServer, fetchCategories, fetchUser } from '../services';
+import { sliderImages } from '../data';
 
 function Home({ navigation }) {
-    const [products, setProducts] = useState([])
-    const [categories, setCategories] = useState([])
-    const [user, setUser] = useState({})
-    const [isLoading, setIsLoading] = useState(true)
-    const [currentCategory, setCurrentCategory] = useState('all')
+    const [products, setProducts] = useState([]);
+    const [categories, setCategories] = useState([]);
+    const [user, setUser] = useState({});
+    const [isLoading, setIsLoading] = useState(true);
+    const [currentCategory, setCurrentCategory] = useState('all');
     const token = useSelector((state) => state.authReducer.userToken);
-    const sectionProducts = useSelector(state => state.productReducer.products)
+    const sectionProducts = useSelector((state) => state.productReducer.products);
 
     useEffect(() => {
         fetchCategories()
-            .then(response => {
-                const categories = response.data.categories
-                let products = sectionProducts
-                products.forEach(productSection => {
-                    categories.forEach(category => {
-                        if(category.type === productSection.title)
-                            productSection.title = category.title
-                    })
-                })
-                setCategories(categories)
-                setProducts(products)
-                if(products.length)
-                    setIsLoading(false)
-                console.log('Fetch products and categories')
+            .then((response) => {
+                const categories = response.data.categories;
+                let products = sectionProducts;
+                products.forEach((productSection) => {
+                    categories.forEach((category) => {
+                        if (category.type === productSection.title)
+                            productSection.title = category.title;
+                    });
+                });
+                setCategories(categories);
+                setProducts(products);
+                if (products.length) setIsLoading(false);
+                console.log('Fetch products and categories');
             })
-            .catch(error => console.error(error))
-    },[sectionProducts])
+            .catch((error) => console.error(error));
+    }, [sectionProducts]);
 
     useEffect(() => {
         fetchUser(token)
-            .then(response => {
-                setUser(response.data.user)
+            .then((response) => {
+                setUser(response.data.user);
             })
-            .catch(error => console.error(error))
-        console.log('Fetch user information')
-    }, [])
+            .catch((error) => console.error(error));
+        console.log('Fetch user information');
+    }, []);
 
     // handler functions
     const handleRenderHeader = () => {
@@ -57,15 +66,16 @@ function Home({ navigation }) {
             <>
                 {/* greeting user */}
                 <View style={styles.header}>
-                   <Pressable
-                        onPress={() => navigation.navigate('profile')}
-                   >
+                    <Pressable onPress={() => navigation.navigate('profile')}>
                         <Image
                             style={styles.userImage}
-                            source={user.avatar ? { uri : user.avatar } : require('../../assets/images/default_avatar.png')}
+                            source={
+                                user.avatar
+                                    ? { uri: user.avatar }
+                                    : require('../../assets/images/default_avatar.png')
+                            }
                         />
-    
-                   </Pressable>
+                    </Pressable>
                     <View style={styles.greetingUser}>
                         <Text style={styles.hiMember}>Hi, {user.username}!</Text>
                         <Text style={styles.subTitle}>Let choose your suitable shoes</Text>
@@ -81,8 +91,8 @@ function Home({ navigation }) {
                     horizontal
                     showsHorizontalScrollIndicator={false}
                 >
-                    <CategoryButton 
-                        category={{ title : 'All' }}
+                    <CategoryButton
+                        category={{ title: 'All' }}
                         handleOnPress={() => setCurrentCategory('all')}
                         isActive={currentCategory === 'all'}
                     />
@@ -98,16 +108,14 @@ function Home({ navigation }) {
                     })}
                 </ScrollView>
 
-                <Carousel 
+                <Carousel
                     data={sliderImages}
                     height={200}
                     loop
                     width={Dimensions.get('window').width}
                     autoPlay
                     scrollAnimationDuration={1200}
-                    renderItem={({ item }) => (
-                        <Image style={styles.sliderImage} source={item} />
-                    )}
+                    renderItem={({ item }) => <Image style={styles.sliderImage} source={item} />}
                 />
             </>
         );
@@ -115,8 +123,8 @@ function Home({ navigation }) {
 
     const handleRenderFooter = () => {
         // code in this function will be render after data in FlatList
-        // use for paging 
-    }
+        // use for paging
+    };
 
     const handleRenderProduct = (data) => {
         return (
@@ -126,16 +134,18 @@ function Home({ navigation }) {
                 keyExtractor={(item, index) => item + index}
                 numColumns={2}
                 showsVerticalScrollIndicator={false}
-                contentContainerStyle={{ alignItems : 'center', justifyContent : 'space-between' }}
-                renderItem={({ item, index}) => {
+                contentContainerStyle={{ alignItems: 'center', justifyContent: 'space-between' }}
+                renderItem={({ item, index }) => {
                     return (
                         <ProductCard
                             product={item}
-                            extraStyles={{ 
-                                marginLeft : index%2 === 0 ? 0 : 4,
-                                marginRight : index%2 === 0 ? 4 : 0,
+                            extraStyles={{
+                                marginLeft: index % 2 === 0 ? 0 : 4,
+                                marginRight: index % 2 === 0 ? 4 : 0,
                             }}
-                            handleOnPress={() => navigation.navigate('productDetail', { product : item })}
+                            handleOnPress={() =>
+                                navigation.navigate('productDetail', { product: item })
+                            }
                         />
                     );
                 }}
@@ -145,36 +155,30 @@ function Home({ navigation }) {
 
     return (
         <SafeAreaView style={[GlobalStyles.container, styles.homeContainer]}>
-            {
-                isLoading ? (
-                    <AppLoading backgroundColor='#fff' />
-                ) : 
-                (
-                    <>
-                        {/* use nested FlatList to render products */}
-                        <FlatList
-                            data={products}
-                            style={styles.productsContainer}
-                            keyExtractor={(item, index) => item.toString() + index}
-                            showsVerticalScrollIndicator={false}
-                            ListHeaderComponent={handleRenderHeader}
-                            ListFooterComponent={handleRenderFooter}
-                            renderItem={({ item }) => {
-                                return (
-                                    item.data[0].genre === currentCategory || currentCategory === 'all' ?
-                                    (
-                                        <>
-                                            <Text style={styles.productSectionTitle}>{item.title}</Text>
-                                            {handleRenderProduct(item.data)}
-                                        </>
-                                    )
-                                    : null
-                                );
-                            }}
-                        />            
-                    </>
-                )
-            }
+            {isLoading ? (
+                <AppLoading backgroundColor="#fff" />
+            ) : (
+                <>
+                    {/* use nested FlatList to render products */}
+                    <FlatList
+                        data={products}
+                        style={styles.productsContainer}
+                        keyExtractor={(item, index) => item.toString() + index}
+                        showsVerticalScrollIndicator={false}
+                        ListHeaderComponent={handleRenderHeader}
+                        ListFooterComponent={handleRenderFooter}
+                        renderItem={({ item }) => {
+                            return item.data[0].genre === currentCategory ||
+                                currentCategory === 'all' ? (
+                                <>
+                                    <Text style={styles.productSectionTitle}>{item.title}</Text>
+                                    {handleRenderProduct(item.data)}
+                                </>
+                            ) : null;
+                        }}
+                    />
+                </>
+            )}
         </SafeAreaView>
     );
 }
@@ -182,10 +186,10 @@ function Home({ navigation }) {
 const styles = StyleSheet.create({
     homeContainer: {
         paddingHorizontal: 8,
-        width : '100%',
+        width: '100%',
         paddingTop: 0,
         paddingBottom: 10,
-        alignItems : 'center',
+        alignItems: 'center',
     },
     header: {
         flexDirection: 'row',
@@ -215,11 +219,11 @@ const styles = StyleSheet.create({
     },
     productsContainer: {
         width: Dimensions.get('window').width,
-        paddingHorizontal : 6,
+        paddingHorizontal: 6,
     },
     productSectionWrapper: {
         width: '100%',
-        gap : 10,
+        gap: 10,
         rowGap: 10,
     },
     productSectionTitle: {
@@ -230,12 +234,12 @@ const styles = StyleSheet.create({
         paddingBottom: 4,
         marginBottom: 10,
     },
-    sliderImage : {
-        width : '100%',
-        height : '100%',
-        objectFit : 'cover',
-        borderRadius : 6,
-    }
+    sliderImage: {
+        width: '100%',
+        height: '100%',
+        objectFit: 'cover',
+        borderRadius: 6,
+    },
 });
 
 export default Home;
