@@ -51,7 +51,7 @@ function Profile({ navigation }) {
                                         title="My account"
                                         icon={<FontAwesome name='user' color={GlobalStyles.primaryColor} size={24}/>}
                                         isPrimaryTag
-                                        handleOnPress={() => navigation.navigate('AccountDetail', { user })}
+                                        handleOnPress={() => navigation.navigate('AccountDetail', { user, setUser })}
                                         isShowMore
                                     />
                     

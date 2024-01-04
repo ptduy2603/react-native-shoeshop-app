@@ -132,6 +132,10 @@ function ProductDetail({ navigation, route }) {
             });
     };
 
+    const handleBuyNow = () => {
+        navigation.navigate('Payment', { products :  [product], totalPrice : product.price })
+    }
+
     const handleAddToFavorites = () => {
         let likedProducts = [];
         Toast.show(isLiked ? 'Xóa sản phẩm khỏi mục yêu thích' : 'Thêm sản phẩm vào mục yêu thích', {
@@ -345,7 +349,8 @@ function ProductDetail({ navigation, route }) {
                     </Text>
                 </TouchableOpacity>
 
-                {/* <TouchableOpacity style={styles.button_cart} onPress={() => {}}>
+
+                <TouchableOpacity style={styles.button_cart} onPress={handleBuyNow}>
                     <FontAwesome
                         name="credit-card"
                         size={24}
@@ -353,9 +358,9 @@ function ProductDetail({ navigation, route }) {
                         style={{ marginRight: 10 }}
                     />
                     <Text style={{ color: 'white', fontSize: 18 }}>
-                        By now
+                        Buy now
                     </Text>
-                </TouchableOpacity> */}
+                </TouchableOpacity> 
             </View>
         </SafeAreaView>
     );
