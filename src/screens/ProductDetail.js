@@ -345,7 +345,7 @@ function ProductDetail({ navigation, route }) {
                     </Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity style={styles.button_cart} onPress={() => {}}>
+                {/* <TouchableOpacity style={styles.button_cart} onPress={() => {}}>
                     <FontAwesome
                         name="credit-card"
                         size={24}
@@ -355,7 +355,7 @@ function ProductDetail({ navigation, route }) {
                     <Text style={{ color: 'white', fontSize: 18 }}>
                         By now
                     </Text>
-                </TouchableOpacity>
+                </TouchableOpacity> */}
             </View>
         </SafeAreaView>
     );
