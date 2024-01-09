@@ -162,7 +162,6 @@ function Home({ navigation }) {
                         keyExtractor={(item, index) => item.toString() + index}
                         showsVerticalScrollIndicator={false}
                         ListHeaderComponent={handleRenderHeader}
-                        ListFooterComponent={handleRenderFooter}
                         renderItem={({ item }) => {
                             return item.data[0].genre === currentCategory ||
                                 currentCategory === 'all' ? (
