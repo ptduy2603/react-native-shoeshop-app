@@ -1,6 +1,7 @@
 {
   "name": "shoeshop",
-  "version": "1.0.0",
+  "version": "1.0.1",
+  "private": true,
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "npx expo start",
@@ -18,6 +19,7 @@
     "axios": "^1.6.0",
     "deprecated-react-native-prop-types": "^2.2.0",
     "expo": "~49.0.13",
+    "expo-image-picker": "~14.3.2",
     "expo-status-bar": "~1.6.0",
     "lottie-react-native": "5.1.6",
     "moment": "^2.29.4",
@@ -41,12 +43,11 @@
     "react-redux": "^8.1.3",
     "redux": "^4.2.1",
     "redux-thunk": "^2.4.2",
-    "expo-image-picker": "~14.3.2"
+    "shoeshop": "file:"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "eslint-config-prettier": "^9.0.0",
     "prettier": "3.0.3"
-  },
-  "private": true
+  }
 }
